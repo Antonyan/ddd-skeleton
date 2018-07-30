@@ -1,0 +1,21 @@
+{
+    "require": {
+        "symfony/http-foundation": "^4.1",
+        "symfony/routing": "^4.1",
+        "symfony/http-kernel": "^4.1",
+        "symfony/event-dispatcher": "^4.1",
+        "symfony/dependency-injection": "^4.1"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/app/",
+            "Infrastructure\\": "src/infrastructure/",
+            "Contexts\\": "src/contexts/",
+            "Persistence\\": "src/persistence/"
+        }
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.4"
+    }
+}

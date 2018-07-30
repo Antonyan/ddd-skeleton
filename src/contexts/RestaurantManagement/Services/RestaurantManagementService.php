@@ -4,7 +4,7 @@ namespace Contexts\RestaurantManagement\Services;
 
 use Contexts\RestaurantManagement\RestaurantModule\Services\RestaurantService;
 use Exception;
-use Persistence\Services\BaseService;
+use Infrastructure\Services\BaseService;
 
 class RestaurantManagementService extends BaseService
 {

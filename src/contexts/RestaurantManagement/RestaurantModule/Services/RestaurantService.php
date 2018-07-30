@@ -3,7 +3,7 @@
 namespace Contexts\RestaurantManagement\RestaurantModule\Services;
 
 use Infrastructure\Exceptions\InfrastructureException;
-use Persistence\Services\BaseService;
+use Infrastructure\Services\BaseService;
 use ReflectionException;
 
 class RestaurantService extends BaseService

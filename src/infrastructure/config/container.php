@@ -14,35 +14,5 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 
 $containerBuilder = new ContainerBuilder();
-$containerBuilder->register('context', RequestContext::class);
-$containerBuilder->register('matcher', UrlMatcher::class)
-    ->setArguments([$routes, new Reference('context')])
-;
-$containerBuilder->register('requestStack', RequestStack::class);
-$containerBuilder->register('controllerResolver', ControllerResolver::class);
-$containerBuilder->register('argumentResolver', ArgumentResolver::class);
-
-$containerBuilder->register('listener.router', RouterListener::class)
-    ->setArguments([new Reference('matcher'), new Reference('requestStack')])
-;
-$containerBuilder->register('listener.response', ResponseListener::class)
-    ->setArguments(['UTF-8'])
-;
-$containerBuilder->register('listener.exception', ExceptionListener::class)
-    ->setArguments(['App\Services\Error::exceptionAction'])
-;
-$containerBuilder->register('dispatcher', EventDispatcher::class)
-    ->addMethodCall('addSubscriber', [new Reference('listener.router')])
-    ->addMethodCall('addSubscriber', [new Reference('listener.response')])
-    ->addMethodCall('addSubscriber', [new Reference('listener.exception')])
-;
-$containerBuilder->register('application', Application::class)
-    ->setArguments([
-        new Reference('controllerResolver'),
-        new Reference('requestStack'),
-        new Reference('argumentResolver'),
-        new Reference('dispatcher'),
-    ])
-;
 
 return $containerBuilder;

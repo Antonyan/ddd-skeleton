@@ -44,7 +44,7 @@ class Application extends HttpKernel
      */
     public function __construct(RouteCollection $routes) {
         /** @var ContainerBuilder $container */
-        $container = include __DIR__.'/config/container.php';
+        $container = include __DIR__.'/config/appContainer.php';
         $this->matcher = $container->get('matcher');
         $this->controllerResolver = $container->get('controllerResolver');
         $this->argumentResolver = $container->get('argumentResolver');

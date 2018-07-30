@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Contexts\RestaurantManagement\Services\RestaurantManagementService;
 use Exception;
-use Persistence\Services\BaseService;
+use Infrastructure\Services\BaseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Persistence\Services;
+namespace Infrastructure\Services;
 
 use Exception;
 use Infrastructure\Models\Config;
@@ -24,9 +24,9 @@ class BaseService
     {
         if ($this->container === null) {
             $dir = \dirname((new \ReflectionClass($this))->getFileName());
-            $persistenceDir = \dirname((new \ReflectionClass(self::class))->getFileName());
+            $infrastructureDir = \dirname((new \ReflectionClass(self::class))->getFileName());
             $this->container = include $dir . '/../config/container.php';
-            $this->container->merge(include $persistenceDir . '/../config/container.php');
+            $this->container->merge(include $infrastructureDir . '/../config/container.php');
             $this->container
                 ->register('config', Config::class)->setArgument('$config', include $dir . '/../config/config.php');
         }

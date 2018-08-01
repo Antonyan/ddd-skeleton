@@ -7,6 +7,7 @@ use Exception;
 use Infrastructure\Services\BaseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Serializer;
 
 class Restaurant extends BaseService
 {
@@ -15,9 +16,11 @@ class Restaurant extends BaseService
      * @return Response
      * @throws Exception
      */
-    public function load(Request $request)
+    public function load(Request $request) : Response
     {
-        return new Response(json_encode($this->getRestaurantManagement()->loadRestaurants(), JSON_FORCE_OBJECT));
+        /** @var Serializer $serializer */
+        $serializer = $this->container()->get('serializer');
+        return new Response($serializer->serialize($this->getRestaurantManagement()->loadRestaurants(), 'json'));
     }
 
     /**

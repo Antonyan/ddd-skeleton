@@ -13,3 +13,6 @@
 /tests/_log/*
 /tests/_temp/*
 /codeception.yml
+/src/infrastructure/config/config.php
+/composer.lock
+/tests/_output/

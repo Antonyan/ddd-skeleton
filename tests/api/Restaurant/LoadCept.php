@@ -4,4 +4,4 @@ $I = new ApiTester($scenario);
 
 $I->sendGET('restaurants');
 
-$I->seeResponseContainsJson(['1' => 'Restaurant']);
+$I->seeResponseContainsJson(['id' => '1', 'name' => 'Restaurant']);

@@ -1,18 +1,17 @@
 <?php
 
-use Infrastructure\Application;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
-use Symfony\Component\HttpKernel\EventListener\ExceptionListener;
-use Symfony\Component\HttpKernel\EventListener\ResponseListener;
-use Symfony\Component\HttpKernel\EventListener\RouterListener;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
-$containerBuilder = new ContainerBuilder();
+$containerBuilder->register('entityManager')
+    ->setFactory([EntityManager::class, 'create'])
+    ->setArgument('$conn', $containerBuilder->get('config')->database)
+    ->setArgument('$config', Setup::createAnnotationMetadataConfiguration(array(__DIR__."../../"), true))
+;
 
-return $containerBuilder;
+$containerBuilder->register('serializer', Serializer::class)
+    ->setArgument('$normalizers', [new ObjectNormalizer()])
+    ->setArgument('$encoders', [new JsonEncoder()]);

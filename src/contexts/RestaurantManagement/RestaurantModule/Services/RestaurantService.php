@@ -2,6 +2,8 @@
 
 namespace Contexts\RestaurantManagement\RestaurantModule\Services;
 
+use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantDbRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Infrastructure\Exceptions\InfrastructureException;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
@@ -9,12 +11,22 @@ use ReflectionException;
 class RestaurantService extends BaseService
 {
     /**
-     * @return mixed
+     * @return ArrayCollection
      * @throws InfrastructureException
      * @throws ReflectionException
      */
-    public function load()
+    public function load() : ArrayCollection
     {
-        return $this->config()->restaurants();
+        return $this->gerRestaurantDbRepository()->load([]);
+    }
+
+    /**
+     * @return RestaurantDbRepository
+     * @throws InfrastructureException
+     * @throws ReflectionException
+     */
+    public function gerRestaurantDbRepository() : RestaurantDbRepository
+    {
+        return $this->container()->get('restaurantDbRepository');
     }
 }

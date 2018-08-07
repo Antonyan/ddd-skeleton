@@ -84,7 +84,10 @@ class Application extends HttpKernel
         } catch (ResourceNotFoundException $exception) {
             $response = new Response('Not Found', 404);
         } catch (Exception $exception) {
-      
+            print_r("\n\n");
+            print_r($exception->getMessage());
+            print_r("\n\n");
+            die;
             $response = new Response('An error occurred', 500);
         }
 

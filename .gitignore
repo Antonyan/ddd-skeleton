@@ -3,9 +3,6 @@
 /vendor/
 /cache/
 
-**/config.php
-**/container.php
-
 !/src/infrastructure/config/container.php
 /tests/api.suite.yml
 /tests/functional.suite.yml
@@ -15,5 +12,5 @@
 /codeception.yml
 /src/infrastructure/config/config.php
 /tests/_output/
-
 /.env
+!/src/infrastructure/Models/Config.php

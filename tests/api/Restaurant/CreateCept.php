@@ -10,6 +10,7 @@ $restaurant = ['id' => 10, 'name' => 'CreatedRestaurant'];
 //$I->haveInDatabase('restaurantAttributeValues', $attributeOne);
 //$I->haveInDatabase('restaurantAttributeValues', $attributeTwo);
 
+$I->setHeader('Content-type', 'application/json');
 $I->sendPOST('restaurants', $restaurant);
 
 //$I->seeResponseContainsJson($restaurant);

@@ -3,14 +3,13 @@
 /vendor/
 /cache/
 
-!/src/infrastructure/config/container.php
 /tests/api.suite.yml
 /tests/functional.suite.yml
 /tests/unit.suite.yml
 /tests/_log/*
 /tests/_temp/*
 /codeception.yml
-/src/infrastructure/config/config.php
 /tests/_output/
 !/src/infrastructure/Models/Config.php
 /.env
+

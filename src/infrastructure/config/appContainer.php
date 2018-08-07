@@ -31,10 +31,16 @@ $containerBuilder->register('listener.response', ResponseListener::class)
 $containerBuilder->register('listener.exception', ExceptionListener::class)
     ->setArguments(['App\Services\Error::exceptionAction'])
 ;
+
+$containerBuilder->register('listener.custom.response', \Infrastructure\Listeners\ResponseListener::class);
+$containerBuilder->register('listener.request', \Infrastructure\Listeners\RequestListener::class);
+
 $containerBuilder->register('dispatcher', EventDispatcher::class)
     ->addMethodCall('addSubscriber', [new Reference('listener.router')])
     ->addMethodCall('addSubscriber', [new Reference('listener.response')])
     ->addMethodCall('addSubscriber', [new Reference('listener.exception')])
+    ->addMethodCall('addListener', ['response', [new Reference('listener.custom.response'), 'onResponse']])
+    ->addMethodCall('addListener', ['request', [new Reference('listener.request'), 'onRequest']])
 ;
 $containerBuilder->register('application', Application::class)
     ->setArguments([

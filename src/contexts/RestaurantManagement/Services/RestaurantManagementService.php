@@ -15,10 +15,16 @@ class RestaurantManagementService extends BaseService
      * @return ArrayCollection
      * @throws InfrastructureException
      * @throws ReflectionException
+     * @throws Exception
      */
     public function loadRestaurants() : ArrayCollection
     {
         return $this->getRestaurantService()->load();
+    }
+
+    public function create(array $data)
+    {
+        return $this->getRestaurantService()->create($data);
     }
 
     /**

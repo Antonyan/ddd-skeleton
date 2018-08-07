@@ -1,14 +1,15 @@
 <?php
 
-namespace Contexts\RestaurantManagement\RestaurantModule\Services;
+namespace Contexts\RestaurantManagement\RestaurantAttributeValueModule\Services;
 
 use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantDbRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Infrastructure\Exceptions\InfrastructureException;
+use Infrastructure\Repository\DbRepository;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 
-class RestaurantService extends BaseService
+class RestaurantAttributeValueService extends BaseService
 {
     /**
      * @return ArrayCollection
@@ -17,12 +18,7 @@ class RestaurantService extends BaseService
      */
     public function load() : ArrayCollection
     {
-        return $this->getRestaurantDbRepository()->load([]);
-    }
-
-    public function create(array $data)
-    {
-        return $this->getRestaurantDbRepository()->create($data);
+        return $this->gerRestaurantAttributeValueDbRepository()->load([]);
     }
 
     /**
@@ -30,8 +26,8 @@ class RestaurantService extends BaseService
      * @throws InfrastructureException
      * @throws ReflectionException
      */
-    public function getRestaurantDbRepository() : RestaurantDbRepository
+    public function gerRestaurantAttributeValueDbRepository() : DbRepository
     {
-        return $this->container()->get('restaurantDbRepository');
+        return $this->container()->get('restaurantAttributeValueDbRepository');
     }
 }

@@ -3,6 +3,8 @@
 namespace Infrastructure;
 
 use Exception;
+use Infrastructure\Events\RequestEvent;
+use Infrastructure\Events\ResponseEvent;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,12 +78,17 @@ class Application extends HttpKernel
             $controller = $this->controllerResolver->getController($request);
             $arguments = $this->argumentResolver->getArguments($request, $controller);
 
+            $this->eventDispatcher->dispatch('request', new RequestEvent($request, $controller[0], $controller[1]));
+
             $response = call_user_func_array($controller, $arguments);
         } catch (ResourceNotFoundException $exception) {
             $response = new Response('Not Found', 404);
         } catch (Exception $exception) {
+      
             $response = new Response('An error occurred', 500);
         }
+
+        $this->eventDispatcher->dispatch('response', new ResponseEvent($response, $request));
 
         return $response;
     }

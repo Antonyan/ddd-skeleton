@@ -8,14 +8,17 @@
         "doctrine/orm": "2.*",
         "doctrine/migrations": "^1.8",
         "symfony/serializer": "^4.1",
-        "symfony/property-access": "^4.1"
+        "symfony/property-access": "^4.1",
+        "doctrine/annotations": "^1.6",
+        "symfony/validator": "^4.1"
     },
 
     "autoload": {
         "psr-4": {
             "App\\": "src/app/",
             "Infrastructure\\": "src/infrastructure/",
-            "Contexts\\": "src/contexts/"
+            "Contexts\\": "src/contexts/",
+            "Migrations\\": "database/migrations/"
         }
     },
     "require-dev": {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Events;
+namespace Infrastructure\Events;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

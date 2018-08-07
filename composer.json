@@ -10,7 +10,8 @@
         "symfony/serializer": "^4.1",
         "symfony/property-access": "^4.1",
         "doctrine/annotations": "^1.6",
-        "symfony/validator": "^4.1"
+        "symfony/validator": "^4.1",
+        "vlucas/phpdotenv": "^2.5"
     },
 
     "autoload": {

@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 $routes = include __DIR__ . '/../src/app/config/restRoutes.php';
 
+(new \Dotenv\Dotenv(__DIR__.'/../'))->load();
+
 /** Workaround for Doctrine annotation autoloader */
 AnnotationRegistry::registerLoader(function($class) use ($loader) {
     return $loader->loadClass($class);

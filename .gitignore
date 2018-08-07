@@ -16,3 +16,4 @@
 /src/infrastructure/config/config.php
 /composer.lock
 /tests/_output/
+!/src/infrastructure/Models/Config.php

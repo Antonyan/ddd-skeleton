@@ -19,6 +19,9 @@
             "Infrastructure\\": "src/infrastructure/",
             "Contexts\\": "src/contexts/",
             "Migrations\\": "database/migrations/"
+        },
+        "psr-0": {
+            "Infrastructure\\Annotations\\": "src/infrastructure/Annotations"
         }
     },
     "require-dev": {

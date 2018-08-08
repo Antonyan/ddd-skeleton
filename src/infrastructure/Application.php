@@ -11,9 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -81,18 +82,38 @@ class Application extends HttpKernel
             $this->eventDispatcher->dispatch('request', new RequestEvent($request, $controller[0], $controller[1]));
 
             $response = call_user_func_array($controller, $arguments);
-        } catch (ResourceNotFoundException $exception) {
-            $response = new Response('Not Found', 404);
         } catch (Exception $exception) {
-            print_r("\n\n");
-            print_r($exception->getMessage());
-            print_r("\n\n");
-            die;
-            $response = new Response('An error occurred', 500);
+
+            if ($catch === false) {
+                throw $exception;
+            }
+
+            $response = $this->handleException($request, $type, $exception);
         }
 
         $this->eventDispatcher->dispatch('response', new ResponseEvent($response, $request));
 
         return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param int $type
+     * @param Exception $exception
+     * @return Response
+     */
+    private function handleException(Request $request,int $type, \Exception $exception): Response
+    {
+        $event = new GetResponseForExceptionEvent($this, $request, $type, $exception);
+        $this->dispatcher->dispatch(KernelEvents::EXCEPTION, $event);
+
+        // a listener might have replaced the exception
+        $exception = $event->getException();
+
+        if (! $event->hasResponse()) {
+            throw $exception;
+        }
+
+        return $event->getResponse();
     }
 }

@@ -7,7 +7,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
-use Symfony\Component\HttpKernel\EventListener\ExceptionListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -28,9 +27,8 @@ $containerBuilder->register('listener.router', RouterListener::class)
 $containerBuilder->register('listener.response', ResponseListener::class)
     ->setArguments(['UTF-8'])
 ;
-$containerBuilder->register('listener.exception', ExceptionListener::class)
-    ->setArguments(['App\Services\Error::exceptionAction'])
-;
+$containerBuilder->register('listener.exception', \Infrastructure\Subscribers\ExceptionSubscriber::class);
+$containerBuilder->register('listener.exception.custom.api', \Infrastructure\Subscribers\ApiErrorSubscriber::class);
 
 $containerBuilder->register('listener.custom.response', \Infrastructure\Listeners\ResponseListener::class);
 $containerBuilder->register('listener.request', \Infrastructure\Listeners\RequestListener::class);
@@ -41,7 +39,9 @@ $containerBuilder->register('dispatcher', EventDispatcher::class)
     ->addMethodCall('addSubscriber', [new Reference('listener.exception')])
     ->addMethodCall('addListener', ['response', [new Reference('listener.custom.response'), 'onResponse']])
     ->addMethodCall('addListener', ['request', [new Reference('listener.request'), 'onRequest']])
+    ->addMethodCall('addSubscriber', [new Reference('listener.exception.custom.api')])
 ;
+
 $containerBuilder->register('application', Application::class)
     ->setArguments([
         new Reference('controllerResolver'),

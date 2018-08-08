@@ -14,7 +14,7 @@ modules:
             dsn: 'mysql:host=127.0.0.1;dbname=*****;charset=utf8'
             user: '*****'
             password: '*****'
-            dump: 'tests/_data/dump.sql'
             populate: false
             cleanup: false
             reconnect: false
+            populator: 'mysql -u$user -p$password -e "DROP DATABASE IF EXISTS $dbname; CREATE DATABASE IF NOT EXISTS $dbname CHARACTER SET utf8 COLLATE utf8_general_ci" && ./migrations migrations:migrate -n'

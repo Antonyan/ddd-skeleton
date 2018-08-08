@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Repository;
 
+use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
@@ -52,6 +53,11 @@ abstract class DbRepository extends BaseRepository
         $this->entityManager->persist($object);
         $this->entityManager->flush();
         return $object;
+    }
+
+    public function get($id) : Restaurant
+    {
+        return $this->entityRepository->find($id);
     }
 
 }

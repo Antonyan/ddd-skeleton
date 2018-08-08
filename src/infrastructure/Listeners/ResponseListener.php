@@ -8,6 +8,9 @@ class ResponseListener
 {
     public function onResponse(ResponseEvent $event) : void
     {
-        //TODO: serialize
+        print_r("\n\n");
+        print_r($event->getResponse()->getContent());
+        print_r("\n\n");
+        die;
     }
 }

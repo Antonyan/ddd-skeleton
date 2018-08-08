@@ -2,7 +2,6 @@
 
 namespace Infrastructure\Models;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
 class RichRequest
@@ -25,6 +24,10 @@ class RichRequest
         }
 
         if (!strpos( $request->headers->all()['content-type'][0], 'json')){
+            return $request;
+        }
+
+        if (!$request->getContent()){
             return $request;
         }
 

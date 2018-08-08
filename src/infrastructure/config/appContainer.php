@@ -28,7 +28,7 @@ $containerBuilder->register('listener.response', ResponseListener::class)
     ->setArguments(['UTF-8'])
 ;
 $containerBuilder->register('listener.exception', \Infrastructure\Subscribers\ExceptionSubscriber::class);
-$containerBuilder->register('listener.exception.custom.api', \Infrastructure\Subscribers\ApiErrorSubscriber::class);
+$containerBuilder->register('listener.exception.custom.api', \Infrastructure\Subscribers\ApiHttpExceptionSubscriber::class);
 
 $containerBuilder->register('listener.custom.response', \Infrastructure\Listeners\ResponseListener::class);
 $containerBuilder->register('listener.request', \Infrastructure\Listeners\RequestListener::class);

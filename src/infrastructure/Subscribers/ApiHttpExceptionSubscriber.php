@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ApiErrorSubscriber implements EventSubscriberInterface
+class ApiHttpExceptionSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {

@@ -17,4 +17,4 @@ AnnotationRegistry::registerLoader(function($class) use ($loader) {
 
 $request = (new \Infrastructure\Models\RichRequest())->createFromGlobals();
 
-$response = (new Application($routes))->handle($request)->send();
+(new Application($routes))->handle($request)->send();

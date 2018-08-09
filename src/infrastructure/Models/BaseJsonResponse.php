@@ -28,14 +28,17 @@ abstract class BaseJsonResponse extends Response
      * @return Response
      * @throws InvalidArgumentException
      * @throws \RuntimeException
+     * @throws \UnexpectedValueException
      */
     public function send() : Response
     {
-        /** @var Response $response */
-        $response = (new Response($this->getContentWithSerializer()))
-            ->setStatusCode($this->statusCode());
-        $response->headers->set('Content-type', 'application/json');
-        return $response->send();
+        $this->setContent($this->getContentWithSerializer());
+        $this->setStatusCode($this->statusCode());
+        $this->headers->set('Content-type', 'application/json');
+        
+        parent::send();
+
+        return $this;
     }
 
     abstract protected function statusCode() : int;

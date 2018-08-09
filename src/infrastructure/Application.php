@@ -74,7 +74,9 @@ class Application extends HttpKernel
         $this->matcher->getContext()->fromRequest($request);
 
         try {
-            $request->attributes->add($this->matcher->match($request->getPathInfo()));
+            if($type == HttpKernelInterface::MASTER_REQUEST) {
+                $request->attributes->add($this->matcher->match($request->getPathInfo()));
+            }
 
             $controller = $this->controllerResolver->getController($request);
             $arguments = $this->argumentResolver->getArguments($request, $controller);

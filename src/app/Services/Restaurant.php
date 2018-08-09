@@ -10,10 +10,8 @@ use Infrastructure\Services\AssociationsSerializer;
 use Infrastructure\Services\BaseService;
 use InvalidArgumentException;
 use ReflectionException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Serializer;
 
 class Restaurant extends BaseService

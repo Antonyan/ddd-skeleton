@@ -20,7 +20,7 @@ abstract class BaseJsonResponse extends Response
      */
     public function __construct($data)
     {
-        parent::__construct('', self::HTTP_OK, []);
+        parent::__construct();
         $this->data = $data;
     }
 

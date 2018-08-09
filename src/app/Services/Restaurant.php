@@ -2,54 +2,75 @@
 
 namespace App\Services;
 
-use Contexts\RestaurantManagement\Services\RestaurantManagementService;
+use Contexts\RestaurantManagement\RestaurantManagementContract;
 use Exception;
 use Infrastructure\Annotations\Validation;
-use Infrastructure\Exceptions\InfrastructureException;
-use Infrastructure\Services\AssociationsSerializer;
+use Infrastructure\Models\CreateEntityJsonResponse;
+use Infrastructure\Models\DeleteEntityJsonResponse;
+use Infrastructure\Models\GetEntityJsonResponse;
+use Infrastructure\Models\LoadCollectionJsonResponse;
 use Infrastructure\Services\BaseService;
-use InvalidArgumentException;
-use ReflectionException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
 
 class Restaurant extends BaseService
 {
     /**
-     * @param Request $request
-     * @return Response
+     * @return LoadCollectionJsonResponse
      * @throws Exception
      */
-    public function load(Request $request) : Response
+    public function load() : LoadCollectionJsonResponse
     {
-        /** @var AssociationsSerializer $serializer */
-        $serializer = $this->container()->get('associationsSerializer');
-        return new Response($serializer->serialize($this->getRestaurantManagement()->loadRestaurants(), 'json', 'getName'));
+        return new LoadCollectionJsonResponse($this->getRestaurantManagement()->loadRestaurants());
     }
 
     /**
-     * @Validation(name="id", type="integer", required=true)
      * @Validation(name="name", type="string", required=true, minLength=3)
      * @param Request $request
-     * @return Response
-     * @throws InfrastructureException
-     * @throws InvalidArgumentException
-     * @throws ReflectionException
+     * @return CreateEntityJsonResponse
      * @throws Exception
      */
-    public function create(Request $request) : Response
+    public function create(Request $request) : CreateEntityJsonResponse
     {
-        /** @var Serializer $serializer */
-        $serializer = $this->container()->get('serializer');
-        return new Response($serializer->serialize($this->getRestaurantManagement()->create($request->request->all()), 'json'));
+        return new CreateEntityJsonResponse($this->getRestaurantManagement()->create($request->request->all()));
     }
 
     /**
-     * @return RestaurantManagementService
+     * @param Request $request
+     * @param $id
+     * @return CreateEntityJsonResponse
      * @throws Exception
      */
-    private function getRestaurantManagement() : RestaurantManagementService
+    public function update(Request $request, $id) : CreateEntityJsonResponse
+    {
+        return new CreateEntityJsonResponse($this->getRestaurantManagement()->update($id, $request->request->all()));
+    }
+
+    /**
+     * @param $id
+     * @return DeleteEntityJsonResponse
+     * @throws Exception
+     */
+    public function delete($id) : DeleteEntityJsonResponse
+    {
+        $this->getRestaurantManagement()->delete($id);
+        return new DeleteEntityJsonResponse();
+    }
+
+    /**
+     * @param $id
+     * @return GetEntityJsonResponse
+     * @throws Exception
+     */
+    public function get($id) : GetEntityJsonResponse
+    {
+        return new GetEntityJsonResponse($this->getRestaurantManagement()->get($id));
+    }
+
+    /**
+     * @return RestaurantManagementContract
+     * @throws Exception
+     */
+    private function getRestaurantManagement() : RestaurantManagementContract
     {
         return $this->container()->get('restaurantManagement');
     }

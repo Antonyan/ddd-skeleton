@@ -4,7 +4,6 @@ namespace Infrastructure;
 
 use Exception;
 use Infrastructure\Events\RequestEvent;
-use Infrastructure\Events\ResponseEvent;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,8 +91,6 @@ class Application extends HttpKernel
 
             $response = $this->handleException($request, $type, $exception);
         }
-
-        $this->eventDispatcher->dispatch('response', new ResponseEvent($response, $request));
 
         return $response;
     }

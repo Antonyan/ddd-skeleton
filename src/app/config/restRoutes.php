@@ -11,5 +11,14 @@ $routes->add('loadRestaurants', new Routing\Route('/restaurants', [
 $routes->add('createRestaurant', new Routing\Route('/restaurants', [
     '_controller' => Restaurant::class . '::create'], [], [], '', [], ['POST']));
 
+$routes->add('getRestaurant', new Routing\Route('/restaurants/{id}', [
+    '_controller' => Restaurant::class . '::get'], [], [], '', [], ['GET']));
+
+$routes->add('updateRestaurant', new Routing\Route('/restaurants/{id}', [
+    '_controller' => Restaurant::class . '::update'], [], [], '', [], ['PUT']));
+
+$routes->add('deleteRestaurant', new Routing\Route('/restaurants/{id}', [
+    '_controller' => Restaurant::class . '::delete'], [], [], '', [], ['DELETE']));
+
 
 return $routes;

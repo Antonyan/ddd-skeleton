@@ -1,33 +1,37 @@
 <?php
 
-namespace Infrastructure\Subscribers;
+namespace App\Services;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
-class ExceptionSubscriber  implements EventSubscriberInterface
+class ErrorController
 {
-    public static function getSubscribedEvents()
+    public function __construct()
     {
-        return array(
-            KernelEvents::EXCEPTION => array(
-                array('logKernelException', 0),
-                array('kernelException', -128),
-            ),
-        );
+        die;
     }
 
-    public function logKernelException(GetResponseForExceptionEvent $event)
+    public function handleHttpException(GetResponseForExceptionEvent $event)
     {
-        #TODO
+        $exception = $event->getException();
+
+        if ($exception instanceof HttpExceptionInterface) {
+            $event->setResponse(
+                new JsonResponse(
+                    ['message' => $exception->getMessage()],
+                    $exception->getStatusCode(),
+                    $exception->getHeaders()
+                )
+            );
+        }
     }
 
-    public function kernelException(GetResponseForExceptionEvent $event)
-    {
+    public function handleAction(FlattenException $exception)
+    {die;
+        var_dump($exception);die;
         if ($event->getResponse()) {
             return;
         }

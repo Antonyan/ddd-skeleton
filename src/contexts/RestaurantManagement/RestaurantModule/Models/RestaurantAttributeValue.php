@@ -1,6 +1,6 @@
 <?php
 
-namespace Contexts\RestaurantManagement\RestaurantAttributeValueModule\Models;
+namespace Contexts\RestaurantManagement\RestaurantModule\Models;
 
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -19,7 +19,7 @@ class RestaurantAttributeValue
     private $value;
 
     /**
-     * @ManyToOne(targetEntity="Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant", inversedBy="attributes")
+     * @ManyToOne(targetEntity="Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant", inversedBy="attributes", fetch="EAGER")
      */
     private $restaurant;
 
@@ -32,11 +32,13 @@ class RestaurantAttributeValue
     }
 
     /**
-     * @param mixed $id
+     * @param $id
+     * @return RestaurantAttributeValue
      */
-    public function setId($id): void
+    public function setId($id): RestaurantAttributeValue
     {
         $this->id = $id;
+        return $this;
     }
 
     /**
@@ -48,11 +50,13 @@ class RestaurantAttributeValue
     }
 
     /**
-     * @param mixed $value
+     * @param $value
+     * @return RestaurantAttributeValue
      */
-    public function setValue($value): void
+    public function setValue($value): RestaurantAttributeValue
     {
         $this->value = $value;
+        return $this;
     }
 
     /**
@@ -64,11 +68,13 @@ class RestaurantAttributeValue
     }
 
     /**
-     * @param mixed $restaurant
+     * @param $restaurant
+     * @return RestaurantAttributeValue
      */
-    public function setRestaurant($restaurant): void
+    public function setRestaurant($restaurant): RestaurantAttributeValue
     {
         $this->restaurant = $restaurant;
+        return $this;
     }
 }
 

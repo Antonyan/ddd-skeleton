@@ -2,7 +2,6 @@
 
 namespace Contexts\RestaurantManagement\RestaurantModule\Models;
 
-use Contexts\RestaurantManagement\RestaurantAttributeValueModule\Models\RestaurantAttributeValue;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -22,8 +21,8 @@ class Restaurant
     private $name;
 
     /**
-     * @OneToMany(targetEntity="Contexts\RestaurantManagement\RestaurantAttributeValueModule\Models\RestaurantAttributeValue", mappedBy="restaurant")
-     * @var RestaurantAttributeValue[]
+     * @OneToMany(targetEntity="Contexts\RestaurantManagement\RestaurantModule\Models\RestaurantAttributeValue", mappedBy="restaurant", orphanRemoval=true)
+     * @var Collection
      */
     private $attributes = null;
 
@@ -69,7 +68,7 @@ class Restaurant
     }
 
     /**
-     * @return Collection|RestaurantAttributeValue[]
+     * @return Collection
      */
     public function getAttributes() : Collection
     {
@@ -77,10 +76,12 @@ class Restaurant
     }
 
     /**
-     * @param RestaurantAttributeValue[] $attributes
+     * @param Collection $attributes
+     * @return Restaurant
      */
-    public function setAttributes(array $attributes): void
+    public function setAttributes(Collection $attributes): Restaurant
     {
         $this->attributes = $attributes;
+        return $this;
     }
 }

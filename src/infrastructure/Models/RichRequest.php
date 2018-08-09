@@ -2,7 +2,6 @@
 
 namespace Infrastructure\Models;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
 class RichRequest

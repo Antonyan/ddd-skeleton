@@ -8,4 +8,4 @@ $I->haveInDatabase('restaurantAttributeValues', ['restaurant_id' => 100, 'value'
 $I->setHeader('Content-type', 'application/json');
 $I->sendGET('restaurants/100');
 
-//$I->seeResponseContainsJson($restaurant);
+$I->seeResponseContainsJson(['name' => 'getRestaurant']);

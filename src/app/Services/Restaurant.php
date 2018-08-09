@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use Contexts\RestaurantManagement\Services\RestaurantManagementService;
+use Contexts\RestaurantManagement\RestaurantManagementContract;
 use Exception;
 use Infrastructure\Annotations\Validation;
 use Infrastructure\Models\CreateEntityJsonResponse;
+use Infrastructure\Models\DeleteEntityJsonResponse;
 use Infrastructure\Models\GetEntityJsonResponse;
 use Infrastructure\Models\LoadCollectionJsonResponse;
 use Infrastructure\Services\BaseService;
@@ -14,11 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 class Restaurant extends BaseService
 {
     /**
-     * @param Request $request
      * @return LoadCollectionJsonResponse
      * @throws Exception
      */
-    public function load(Request $request) : LoadCollectionJsonResponse
+    public function load() : LoadCollectionJsonResponse
     {
         return new LoadCollectionJsonResponse($this->getRestaurantManagement()->loadRestaurants());
     }
@@ -35,6 +35,28 @@ class Restaurant extends BaseService
     }
 
     /**
+     * @param Request $request
+     * @param $id
+     * @return CreateEntityJsonResponse
+     * @throws Exception
+     */
+    public function update(Request $request, $id) : CreateEntityJsonResponse
+    {
+        return new CreateEntityJsonResponse($this->getRestaurantManagement()->update($id, $request->request->all()));
+    }
+
+    /**
+     * @param $id
+     * @return DeleteEntityJsonResponse
+     * @throws Exception
+     */
+    public function delete($id) : DeleteEntityJsonResponse
+    {
+        $this->getRestaurantManagement()->delete($id);
+        return new DeleteEntityJsonResponse();
+    }
+
+    /**
      * @param $id
      * @return GetEntityJsonResponse
      * @throws Exception
@@ -45,10 +67,10 @@ class Restaurant extends BaseService
     }
 
     /**
-     * @return RestaurantManagementService
+     * @return RestaurantManagementContract
      * @throws Exception
      */
-    private function getRestaurantManagement() : RestaurantManagementService
+    private function getRestaurantManagement() : RestaurantManagementContract
     {
         return $this->container()->get('restaurantManagement');
     }

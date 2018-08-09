@@ -8,3 +8,5 @@ $I->setHeader('Content-type', 'application/json');
 $I->sendPOST('restaurants', $restaurant);
 
 $I->seeResponseContainsJson($restaurant);
+
+$I->seeInDatabase('restaurants', $restaurant);

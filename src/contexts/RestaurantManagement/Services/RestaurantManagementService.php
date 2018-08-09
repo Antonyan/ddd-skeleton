@@ -2,6 +2,7 @@
 
 namespace Contexts\RestaurantManagement\Services;
 
+use Contexts\RestaurantManagement\RestaurantManagementContract;
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Contexts\RestaurantManagement\RestaurantModule\Services\RestaurantService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,7 +13,7 @@ use Infrastructure\Exceptions\InfrastructureException;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 
-class RestaurantManagementService extends BaseService
+class RestaurantManagementService extends BaseService implements RestaurantManagementContract
 {
     /**
      * @return ArrayCollection
@@ -41,6 +42,27 @@ class RestaurantManagementService extends BaseService
 
     /**
      * @param $id
+     * @param array $data
+     * @return mixed
+     * @throws Exception
+     */
+    public function update($id, array $data) : Restaurant
+    {
+        return $this->getRestaurantService()->update($id, $data);
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    public function delete($id) : bool
+    {
+        return $this->getRestaurantService()->delete($id);
+    }
+
+    /**
+     * @param $id
      * @return Restaurant
      * @throws Exception
      */
@@ -53,7 +75,7 @@ class RestaurantManagementService extends BaseService
      * @return RestaurantService
      * @throws Exception
      */
-    public function getRestaurantService() : RestaurantService
+    private function getRestaurantService() : RestaurantService
     {
         return $this->container()->get('RestaurantService');
     }

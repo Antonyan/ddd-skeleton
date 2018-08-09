@@ -2,7 +2,6 @@
 
 namespace Infrastructure\Models;
 
-
 class DeleteEntityJsonResponse extends BaseJsonResponse
 {
     public function __construct()

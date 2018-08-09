@@ -13,7 +13,8 @@ class RestaurantDbRepository extends DbRepository
      */
     protected function createObject(array $data) : Restaurant
     {
-        return (new Restaurant())->setId($data['id'])->setName($data['name']);
+        return (new Restaurant())
+            ->setId($data['id'])
+            ->setName($data['name']);
     }
-
 }

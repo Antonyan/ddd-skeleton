@@ -53,13 +53,17 @@ class ValidationRulesReader
 
         /** @var Validation $ruleDescription */
         foreach ((new AnnotationReader())->getMethodAnnotations($method) as $ruleDescription) {
+            if (! ($ruleDescription instanceof Validation)) {
+                continue;
+            }
+
             $rule = new ValidationRule($ruleDescription->name);
 
             if (!$ruleDescription->type) {
                 $ruleDescription->type = 'string';
             }
 
-            foreach ($this->constainsMap() as $field => $constrain) {
+            foreach ($this->constrainMap() as $field => $constrain) {
 
                 if (!$ruleDescription->$field){
                     continue;
@@ -111,7 +115,7 @@ class ValidationRulesReader
      * @throws InvalidOptionsException
      * @throws MissingOptionsException
      */
-    private function constainsMap()
+    private function constrainMap()
     {
         return[
             'type' => function($value) {return $this->addType($value);},

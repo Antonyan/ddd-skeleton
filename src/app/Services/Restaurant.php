@@ -35,6 +35,7 @@ class Restaurant extends BaseService
     }
 
     /**
+     * @Validation(name="name", type="string", required=true, minLength=3)
      * @param Request $request
      * @param $id
      * @return CreateEntityJsonResponse

@@ -5,6 +5,7 @@ namespace Infrastructure\Models;
 use Doctrine\Common\Annotations\AnnotationException;
 use Infrastructure\Exceptions\InfrastructureException;
 use Infrastructure\Exceptions\ValidationException;
+use Infrastructure\Services\BaseService;
 use ReflectionException;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validation;
@@ -22,7 +23,7 @@ class Validator
      * @param $method
      * @throws ValidatorException
      */
-    public function __construct($controller, $method)
+    public function __construct(BaseService $controller, $method)
     {
         $this->validationRulesReader = new ValidationRulesReader($controller, $method);
     }

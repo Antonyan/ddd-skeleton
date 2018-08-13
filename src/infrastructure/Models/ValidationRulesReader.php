@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Infrastructure\Annotations\Validation;
 use Infrastructure\Exceptions\InfrastructureException;
+use Infrastructure\Services\BaseService;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Validator\Constraints\Date;
@@ -20,16 +21,22 @@ use Symfony\Component\Validator\Exception\MissingOptionsException;
 
 class ValidationRulesReader
 {
+    /**
+     * @var BaseService
+     */
     private $controllerForValidation;
 
+    /**
+     * @var string
+     */
     private $methodForValidation;
 
     /**
      * ValidationRulesReader constructor.
-     * @param $controllerForValidation
+     * @param BaseService $controllerForValidation
      * @param $methodForValidation
      */
-    public function __construct($controllerForValidation, $methodForValidation)
+    public function __construct(BaseService $controllerForValidation, $methodForValidation)
     {
         $this->controllerForValidation = $controllerForValidation;
         $this->methodForValidation = $methodForValidation;
@@ -53,6 +60,11 @@ class ValidationRulesReader
 
         /** @var Validation $ruleDescription */
         foreach ((new AnnotationReader())->getMethodAnnotations($method) as $ruleDescription) {
+
+            if (!($ruleDescription instanceof Validation)){
+                continue;
+            }
+
             $rule = new ValidationRule($ruleDescription->name);
 
             if (!$ruleDescription->type) {

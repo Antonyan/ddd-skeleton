@@ -1,6 +1,6 @@
 <?php
 
-use Contexts\RestaurantManagement\RestaurantModule\Builders\RestaurantAttributeValueBuilder;
+use Contexts\RestaurantManagement\RestaurantModule\Factories\RestaurantAttributeValueFactory;
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Contexts\RestaurantManagement\RestaurantModule\Models\RestaurantAttributeValue;
 use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantAttributeValueDbRepository;
@@ -11,7 +11,7 @@ $containerBuilder->register('restaurantDbRepository', RestaurantDbRepository::cl
     ->setArgument('$entityRepository', new Reference('entityManager'))
     ->setArgument('$entity', Restaurant::class);
 
-$containerBuilder->register('restaurantAttributeValueBuilder', RestaurantAttributeValueBuilder::class);
+$containerBuilder->register('restaurantAttributeValueBuilder', RestaurantAttributeValueFactory::class);
 
 $containerBuilder->register('restaurantAttributeValueDbRepository', RestaurantAttributeValueDbRepository::class)
     ->setArgument('$entityRepository', new Reference('entityManager'))

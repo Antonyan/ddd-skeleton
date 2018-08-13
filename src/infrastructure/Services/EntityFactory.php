@@ -2,9 +2,9 @@
 
 namespace Infrastructure\Services;
 
-abstract class BaseBuilder
+abstract class EntityFactory
 {
-    abstract public function build(array $data);
+    abstract public function create(array $data);
 
     /**
      * @param $data

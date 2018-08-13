@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Events;
 
+use Infrastructure\Services\BaseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -12,6 +13,9 @@ class RequestEvent extends Event
      */
     private $request;
 
+    /**
+     * @var BaseService
+     */
     private $controller;
 
     /**
@@ -25,7 +29,7 @@ class RequestEvent extends Event
      * @param $controller
      * @param string $methodName
      */
-    public function __construct(Request $request, $controller, string $methodName)
+    public function __construct(Request $request, BaseService $controller, string $methodName)
     {
         $this->request = $request;
         $this->controller = $controller;
@@ -41,9 +45,9 @@ class RequestEvent extends Event
     }
 
     /**
-     * @return mixed
+     * @return BaseService
      */
-    public function getController()
+    public function getController() : BaseService
     {
         return $this->controller;
     }

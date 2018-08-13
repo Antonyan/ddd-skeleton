@@ -10,6 +10,6 @@ class UpdateEntityJsonResponse extends BaseJsonResponse
      */
     protected function statusCode(): int
     {
-        return BaseJsonResponse::HTTP_OK;
+        return self::HTTP_OK;
     }
 }

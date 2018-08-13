@@ -48,7 +48,7 @@ abstract class DbRepository extends BaseRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function create(array $data)
+    protected function createEntity(array $data)
     {
         $object = $this->createObject($data);
         $this->entityManager->persist($object);
@@ -64,7 +64,7 @@ abstract class DbRepository extends BaseRepository
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException
      */
-    public function delete($id, $entity) : bool
+    public function deleteEntity($id, $entity) : bool
     {
         $this->entityManager->remove($this->entityManager->getReference($entity, $id));
         $this->entityManager->flush();
@@ -79,7 +79,7 @@ abstract class DbRepository extends BaseRepository
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException
      */
-    public function update(array $data)
+    protected function updateEntity(array $data)
     {
         $object = $this->createObject($data);
 
@@ -114,7 +114,7 @@ abstract class DbRepository extends BaseRepository
      * @param $id
      * @return null|object
      */
-    public function get($id)
+    protected function getEntity($id)
     {
         return $this->entityRepository->find($id);
     }

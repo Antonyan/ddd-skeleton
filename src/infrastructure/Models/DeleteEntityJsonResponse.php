@@ -14,6 +14,6 @@ class DeleteEntityJsonResponse extends BaseJsonResponse
      */
     protected function statusCode(): int
     {
-        return BaseJsonResponse::HTTP_NO_CONTENT;
+        return self::HTTP_NO_CONTENT;
     }
 }

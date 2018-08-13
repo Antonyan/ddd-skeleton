@@ -10,6 +10,6 @@ class CreateEntityJsonResponse extends BaseJsonResponse
      */
     protected function statusCode(): int
     {
-        return BaseJsonResponse::HTTP_CREATED;
+        return self::HTTP_CREATED;
     }
 }

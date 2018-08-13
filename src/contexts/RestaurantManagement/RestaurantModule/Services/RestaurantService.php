@@ -49,7 +49,7 @@ class RestaurantService extends BaseService
      * @throws ReflectionException
      * @throws ORMInvalidArgumentException
      */
-    public function update($id, array $data)
+    public function update($id, array $data) : Restaurant
     {
         if (array_key_exists('attributes', $data) && !empty($data['attributes'])){
             $this->getRestaurantAttributeValueDbRepository()
@@ -72,7 +72,7 @@ class RestaurantService extends BaseService
      */
     public function delete($id) : bool
     {
-        return $this->getRestaurantDbRepository()->delete($id, Restaurant::class);
+        return $this->getRestaurantDbRepository()->delete($id);
     }
 
     /**

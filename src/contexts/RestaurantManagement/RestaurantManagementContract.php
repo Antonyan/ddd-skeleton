@@ -4,10 +4,11 @@ namespace Contexts\RestaurantManagement;
 
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Doctrine\Common\Collections\ArrayCollection;
+use Infrastructure\Models\SearchCriteria;
 
 interface RestaurantManagementContract
 {
-    public function loadRestaurants() : ArrayCollection;
+    public function loadRestaurants(SearchCriteria $conditions) : ArrayCollection;
 
     public function create(array $data) : Restaurant;
 

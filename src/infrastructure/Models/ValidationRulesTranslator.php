@@ -4,7 +4,6 @@ namespace Infrastructure\Models;
 
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Exception;
 use Infrastructure\Annotations\Validation;
 use Infrastructure\Exceptions\InfrastructureException;
 use Infrastructure\Services\BaseService;
@@ -20,69 +19,45 @@ use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\Exception\InvalidOptionsException;
 use Symfony\Component\Validator\Exception\MissingOptionsException;
 
-class ValidationRulesReader
+class ValidationRulesTranslator
 {
     /**
-     * @var BaseService
-     */
-    private $controllerForValidation;
-
-    /**
-     * @var string
-     */
-    private $methodForValidation;
-
-    /**
-     * @var array
-     */
-    private $rules;
-
-    /**
-     * ValidationRulesReader constructor.
-     * @param BaseService $controllerForValidation
-     * @param $methodForValidation
-     */
-    public function __construct(BaseService $controllerForValidation, $methodForValidation)
-    {
-        $this->controllerForValidation = $controllerForValidation;
-        $this->methodForValidation = $methodForValidation;
-    }
-
-    /**
-     * @return ValidationRule[]
-     * @throws AnnotationException
-     * @throws ReflectionException
+     * @param array $ruleDescriptions
+     * @return array
      * @throws ConstraintDefinitionException
      * @throws InvalidOptionsException
      * @throws MissingOptionsException
      */
-    public function rules() : array
+    public function translate(array $ruleDescriptions) : array
     {
-        if ($this->rules) {
-            return $this->rules;
+        $rules = [];
+
+        /** @var Validation $ruleDescription */
+        foreach ($ruleDescriptions as $ruleDescription) {
+
+            if (!($ruleDescription instanceof Validation)){
+                continue;
+            }
+
+            $rule = new ValidationRule($ruleDescription->name);
+
+            if (!$ruleDescription->type) {
+                $ruleDescription->type = 'string';
+            }
+
+            foreach ($this->constrainsMap() as $field => $constrain) {
+
+                if (!$ruleDescription->$field){
+                    continue;
+                }
+
+                $rule->addConstraint($constrain($ruleDescription->$field));
+            }
+
+            $rules[] = $rule;
         }
 
-        $reflectionClass = new ReflectionClass($this->controllerForValidation);
-        $method = $reflectionClass->getMethod($this->methodForValidation);
-
-        $this->rules = (new AnnotationReader())->getMethodAnnotations($method);
-        return $this->rules;
-    }
-
-    /**
-     * @return array
-     * @throws Exception
-     */
-    public function validationFields() : array
-    {
-        $validationFields = [];
-
-        /** @var Validation $rule */
-        foreach ($this->rules() as $rule) {
-            $validationFields[] = $rule->name;
-         }
-
-         return $validationFields;
+        return $rules;
     }
 
     /**
@@ -93,7 +68,7 @@ class ValidationRulesReader
      * @throws InvalidOptionsException
      * @throws MissingOptionsException
      */
-    private function addType($type) : Type
+    public function addType($type) : Type
     {
         $supportedTypes = ['array', 'bool', 'callable', 'float', 'double', 'int', 'integer',
             'iterable', 'long', 'null', 'numeric', 'object', 'real', 'resource', 'scalar', 'string'];
@@ -117,12 +92,11 @@ class ValidationRulesReader
 
     /**
      * @return array
-     * @throws InfrastructureException
      * @throws ConstraintDefinitionException
      * @throws InvalidOptionsException
      * @throws MissingOptionsException
      */
-    private function constainsMap()
+    private function constrainsMap() : array
     {
         return[
             'type' => function($value) {return $this->addType($value);},

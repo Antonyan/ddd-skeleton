@@ -6,23 +6,23 @@ use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantAttributeValueDbRepository;
 use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantDbRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
-use Doctrine\ORM\ORMInvalidArgumentException;
+use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
+use Infrastructure\Models\SearchCriteria;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 
 class RestaurantService extends BaseService
 {
     /**
+     * @param SearchCriteria $conditions
      * @return ArrayCollection
      * @throws InfrastructureException
      * @throws ReflectionException
      */
-    public function load() : ArrayCollection
+    public function load(SearchCriteria $conditions) : ArrayCollection
     {
-        return $this->getRestaurantDbRepository()->load([]);
+        return $this->getRestaurantDbRepository()->load($conditions);
     }
 
     /**
@@ -30,8 +30,7 @@ class RestaurantService extends BaseService
      * @return Restaurant
      * @throws InfrastructureException
      * @throws ReflectionException
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @throws Exception
      */
     public function create(array $data) : Restaurant
     {
@@ -43,11 +42,7 @@ class RestaurantService extends BaseService
      * @param $id
      * @param array $data
      * @return mixed
-     * @throws InfrastructureException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws ReflectionException
-     * @throws ORMInvalidArgumentException
+     * @throws Exception
      */
     public function update($id, array $data) : Restaurant
     {
@@ -65,10 +60,7 @@ class RestaurantService extends BaseService
      * @param $id
      * @return bool
      * @throws InfrastructureException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws ReflectionException
-     * @throws ORMInvalidArgumentException
+     * @throws Exception
      */
     public function delete($id) : bool
     {

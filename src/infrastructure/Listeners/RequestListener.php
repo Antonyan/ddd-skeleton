@@ -2,30 +2,36 @@
 
 namespace Infrastructure\Listeners;
 
-use Doctrine\Common\Annotations\AnnotationException;
+use Exception;
 use Infrastructure\Events\RequestEvent;
-use Infrastructure\Exceptions\InfrastructureException;
-use Infrastructure\Exceptions\ValidationException;
+use Infrastructure\Models\ValidationRulesReader;
 use Infrastructure\Models\Validator;
-use ReflectionException;
-use Symfony\Component\Validator\Exception\ValidatorException;
 
 class RequestListener
 {
     /**
      * @param RequestEvent $event
-     * @throws AnnotationException
-     * @throws InfrastructureException
-     * @throws ValidationException
-     * @throws ReflectionException
-     * @throws ValidatorException
+     * @throws Exception
      */
     public function onRequest(RequestEvent $event)
     {
-        $validator = new Validator($event->getController(), $event->getMethodName());
+        $validationRulesReader = new ValidationRulesReader($event->getController(), $event->getMethodName());
+        $validator = new Validator($validationRulesReader->rules());
         $validator->validate(array_merge($event->getRequest()->request->all(), $event->getRequest()->query->all()));
 
-        //TODO: add filter
-        //$event->getRequest()->request->replace(['id' => '33', 'name' => 'RRR']);
+        $this->filterRequest($event, $validationRulesReader);
+    }
+
+    /**
+     * @param RequestEvent $event
+     * @param $validationRulesReader
+     */
+    private function filterRequest(RequestEvent $event, $validationRulesReader): void
+    {
+        $validationFields = $validationRulesReader->validationFields();
+        $request = $event->getRequest();
+
+        $request->request->replace(array_intersect_key($request->request->all(), array_flip($validationFields)));
+        $request->query->replace(array_intersect_key($request->query->all(), array_flip($validationFields)));
     }
 }

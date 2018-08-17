@@ -68,7 +68,7 @@ class ValidationRulesTranslator
      * @throws InvalidOptionsException
      * @throws MissingOptionsException
      */
-    public function addType($type) : Type
+    private function addType($type) : Type
     {
         $supportedTypes = ['array', 'bool', 'callable', 'float', 'double', 'int', 'integer',
             'iterable', 'long', 'null', 'numeric', 'object', 'real', 'resource', 'scalar', 'string'];

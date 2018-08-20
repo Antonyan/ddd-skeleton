@@ -23,6 +23,9 @@ class SearchCriteria
     private $parsedCriteria;
 
     /**
+     * Constructor receive array with data from query string
+     * Query string can look like (url?id=1,2,5&name=Ivanov&orderByACS=name)
+     * And it would be parsed by Symfony as ['id' => '1,2,5', 'name' => 'Ivanov', 'orderByACS' => 'name']
      * SearchCriteria constructor.
      * @param array $criteria
      */

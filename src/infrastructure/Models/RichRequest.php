@@ -27,11 +27,9 @@ class RichRequest
             return $request;
         }
 
-        if (!$request->getContent()){
-            return $request;
-        }
+        $content = json_decode($request->getContent(), true);
 
-        $request->request->replace(json_decode($request->getContent(), true));
+        $request->request->replace(($content ?? [] ));
 
         return $request;
     }

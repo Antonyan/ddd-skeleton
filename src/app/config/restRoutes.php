@@ -9,4 +9,6 @@ $routesCollectionBuilder = new RouteCollectionBuilder();
 
 $routesCollectionBuilder->addCRUD('/restaurants', Restaurant::class);
 
-return $routesCollectionBuilder->build();
+$routes = $routesCollectionBuilder->build();
+
+return $routes;

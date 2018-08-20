@@ -25,7 +25,7 @@ class InternalException extends \Exception implements HttpExceptionInterface
      * @param null|Throwable $previous
      * @param int $code
      */
-    public function __construct($message = "", $statusCode, $headers = [], Throwable $previous = null, ?$code = 0)
+    public function __construct($message = '', $statusCode, $headers = [], Throwable $previous = null, $code = 0)
     {
         $this->statusCode = $statusCode;
         $this->headers = $headers;

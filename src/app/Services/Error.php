@@ -1,10 +1,11 @@
 <?php
 namespace App\Services;
 
+use Infrastructure\Services\BaseService;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class Error
+class Error extends BaseService
 {
     public function handle(FlattenException $exception)
     {

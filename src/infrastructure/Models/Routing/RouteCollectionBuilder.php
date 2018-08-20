@@ -30,8 +30,9 @@ class RouteCollectionBuilder
     {
         $this->addGET($path, $presentationService, 'load')
             ->addPOST($path, $presentationService, 'create')
-            ->addPUT($path, $presentationService, 'update')
-            ->addDELETE($path, $presentationService, 'delete');
+            ->addPUT($path . '/{id}', $presentationService, 'update')
+            ->addDELETE($path . '/{id}', $presentationService, 'delete')
+            ->addGET($path . '/{id}', $presentationService, 'get');
 
         return $this;
     }
@@ -94,7 +95,7 @@ class RouteCollectionBuilder
      */
     public function addUrl(string $httpMethod, string $url, string $presentationService, string $serviceMethod) : RouteCollectionBuilder
     {
-        $this->routeCollection->add($url,
+        $this->routeCollection->add($url . $presentationService . $serviceMethod,
             (new RouteBuilder())
                 ->setPath($url)
                 ->setService($presentationService)

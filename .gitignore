@@ -6,6 +6,7 @@
 /tests/api.suite.yml
 /tests/functional.suite.yml
 /tests/unit.suite.yml
+/tests/_support/_generated/*
 /tests/_log/*
 /tests/_temp/*
 /codeception.yml

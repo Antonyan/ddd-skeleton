@@ -5,7 +5,7 @@ namespace Infrastructure\Exceptions;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
-abstract class BaseInternalException extends \Exception implements HttpExceptionInterface
+class InternalException extends \Exception implements HttpExceptionInterface
 {
     /**
      * @var array

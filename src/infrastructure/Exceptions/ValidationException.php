@@ -3,7 +3,7 @@ namespace Infrastructure\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class ValidationException extends BaseInternalException
+class ValidationException extends InternalException
 {
     /**
      * ValidationException constructor.

@@ -5,7 +5,7 @@ namespace Infrastructure\Exceptions;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class InfrastructureException extends BaseInternalException
+class InfrastructureException extends InternalException
 {
     /**
      * InfrastructureException constructor.

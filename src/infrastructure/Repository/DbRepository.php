@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Infrastructure\Models\SearchCriteria;
 
 abstract class DbRepository extends BaseRepository
 {
@@ -34,12 +35,13 @@ abstract class DbRepository extends BaseRepository
     }
 
     /**
-     * @param array $conditions
+     * @param SearchCriteria $conditions
      * @return ArrayCollection
      */
-    public function load(array $conditions) : ArrayCollection
+    public function load(SearchCriteria $conditions) : ArrayCollection
     {
-        return new ArrayCollection($this->entityRepository->findBy($conditions));
+        return new ArrayCollection($this->entityRepository
+            ->findBy($conditions->conditions(), $conditions->orderBy(), $conditions->limit(), $conditions->offset()));
     }
 
     /**

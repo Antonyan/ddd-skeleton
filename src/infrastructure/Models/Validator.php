@@ -13,19 +13,17 @@ use Symfony\Component\Validator\Validation;
 class Validator
 {
     /**
-     * @var ValidationRulesReader
+     * @var array
      */
-    private $validationRulesReader;
+    private $rules;
 
     /**
      * Validator constructor.
-     * @param $controller
-     * @param $method
-     * @throws ValidatorException
+     * @param array $rules
      */
-    public function __construct(BaseService $controller, $method)
+    public function __construct(array $rules)
     {
-        $this->validationRulesReader = new ValidationRulesReader($controller, $method);
+        $this->rules = $rules;
     }
 
     /**
@@ -37,7 +35,7 @@ class Validator
      */
     public function validate(array $dataForValidation) : void
     {
-        if (!$this->validationRulesReader){
+        if (!$this->rules){
             return;
         }
 
@@ -45,7 +43,7 @@ class Validator
 
         $errors = [];
 
-        foreach ($this->validationRulesReader->rules() as $item) {
+        foreach ((new ValidationRulesTranslator())->translate($this->rules) as $item) {
 
             if (!array_key_exists($item->getName(), $dataForValidation)){
                 $dataForValidation[$item->getName()] = null;

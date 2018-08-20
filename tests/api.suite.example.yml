@@ -9,4 +9,5 @@ modules:
         headers:
           ph-token: test
     - Db
+    - \Helper\RandomGeneratorHelper
 

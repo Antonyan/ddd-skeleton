@@ -10,20 +10,22 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
+use Infrastructure\Models\SearchCriteria;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 
 class RestaurantManagementService extends BaseService implements RestaurantManagementContract
 {
     /**
+     * @param SearchCriteria $conditions
      * @return ArrayCollection
      * @throws InfrastructureException
      * @throws ReflectionException
      * @throws Exception
      */
-    public function loadRestaurants() : ArrayCollection
+    public function loadRestaurants(SearchCriteria $conditions) : ArrayCollection
     {
-        return $this->getRestaurantService()->load();
+        return $this->getRestaurantService()->load($conditions);
     }
 
     /**

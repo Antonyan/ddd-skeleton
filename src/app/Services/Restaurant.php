@@ -9,18 +9,26 @@ use Infrastructure\Models\CreateEntityJsonResponse;
 use Infrastructure\Models\DeleteEntityJsonResponse;
 use Infrastructure\Models\GetEntityJsonResponse;
 use Infrastructure\Models\LoadCollectionJsonResponse;
+use Infrastructure\Models\SearchCriteria;
 use Infrastructure\Services\BaseService;
 use Symfony\Component\HttpFoundation\Request;
 
 class Restaurant extends BaseService
 {
     /**
+     * @Validation(name="id", type="string")
+     * @Validation(name="limit", type="string")
+     * @Validation(name="offset", type="string")
+     * @Validation(name="orderByASC", type="string")
+     * @Validation(name="orderByDESC", type="string")
+     * @param Request $request
      * @return LoadCollectionJsonResponse
      * @throws Exception
      */
-    public function load() : LoadCollectionJsonResponse
+    public function load(Request $request) : LoadCollectionJsonResponse
     {
-        return new LoadCollectionJsonResponse($this->getRestaurantManagement()->loadRestaurants());
+        return new LoadCollectionJsonResponse($this->getRestaurantManagement()
+            ->loadRestaurants(new SearchCriteria($request->query->all())));
     }
 
     /**
@@ -36,6 +44,7 @@ class Restaurant extends BaseService
 
     /**
      * @Validation(name="name", type="string", required=true, minLength=3)
+     * @Validation(name="attributes", type="array")
      * @param Request $request
      * @param $id
      * @return CreateEntityJsonResponse

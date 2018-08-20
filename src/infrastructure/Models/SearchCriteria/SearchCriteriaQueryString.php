@@ -1,8 +1,8 @@
 <?php
 
-namespace Infrastructure\Models;
+namespace Infrastructure\Models\SearchCriteria;
 
-class SearchCriteria
+class SearchCriteriaQueryString implements SearchCriteria
 {
     private const CONDITIONS = 'conditions';
     private const LIMIT = 'limit';
@@ -39,7 +39,8 @@ class SearchCriteria
      */
     public function limit() : int
     {
-        return array_key_exists(self::LIMIT, $this->parsedCriteria()) ?
+        return array_key_exists(self::LIMIT, $this->parsedCriteria())
+        && $this->parsedCriteria()[self::LIMIT] < self::MAX_LIMIT ?
             $this->parsedCriteria()[self::LIMIT] : self::MAX_LIMIT;
     }
 

@@ -10,7 +10,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
-use Infrastructure\Models\SearchCriteria;
+use Infrastructure\Models\SearchCriteria\SearchCriteria;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 

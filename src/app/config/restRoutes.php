@@ -1,24 +1,12 @@
 <?php
 
 use App\Services\Restaurant;
+use Infrastructure\Models\Routing\RouteBuilder;
+use Infrastructure\Models\Routing\RouteCollectionBuilder;
 use Symfony\Component\Routing;
 
-$routes = new Routing\RouteCollection();
+$routesCollectionBuilder = new RouteCollectionBuilder();
 
-$routes->add('loadRestaurants', new Routing\Route('/restaurants', [
-    '_controller' => Restaurant::class . '::load'], [], [], '', [], ['GET']));
+$routesCollectionBuilder->addCRUD('/restaurants', Restaurant::class);
 
-$routes->add('createRestaurant', new Routing\Route('/restaurants', [
-    '_controller' => Restaurant::class . '::create'], [], [], '', [], ['POST']));
-
-$routes->add('getRestaurant', new Routing\Route('/restaurants/{id}', [
-    '_controller' => Restaurant::class . '::get'], [], [], '', [], ['GET']));
-
-$routes->add('updateRestaurant', new Routing\Route('/restaurants/{id}', [
-    '_controller' => Restaurant::class . '::update'], [], [], '', [], ['PUT']));
-
-$routes->add('deleteRestaurant', new Routing\Route('/restaurants/{id}', [
-    '_controller' => Restaurant::class . '::delete'], [], [], '', [], ['DELETE']));
-
-
-return $routes;
+return $routesCollectionBuilder->build();

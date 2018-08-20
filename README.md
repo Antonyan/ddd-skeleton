@@ -10,16 +10,8 @@ $routesCollectionBuilder = new RouteCollectionBuilder();
 
 $routesCollectionBuilder->addCRUD('/restaurants', Restaurant::class);
 
-$routeCollection = $routesCollectionBuilder->build();
+$routesCollectionBuilder->addGET('you/url', 'YouService', 'youMethod');
 
-$routeCollection->add('whateverYouWant',
-    (new RouteBuilder())
-        ->setPath('you/url')
-        ->setService('YouService')
-        ->setServiceMethod('youMethod')
-        ->build()
-);
-
-return $routeCollection;
+return $routesCollectionBuilder->build();
 
 ````

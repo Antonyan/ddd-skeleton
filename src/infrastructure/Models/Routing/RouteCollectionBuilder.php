@@ -75,6 +75,89 @@ class RouteCollectionBuilder
     }
 
     /**
+     * @param string $url
+     * @param string $presentationService
+     * @param string $serviceMethod
+     * @return RouteCollectionBuilder
+     * @throws InfrastructureException
+     */
+    public function addGET(string $url, string $presentationService, string $serviceMethod) : RouteCollectionBuilder
+    {
+        $this->routeCollection->add($url,
+            (new RouteBuilder())
+                ->setPath($url)
+                ->setService($presentationService)
+                ->setServiceMethod($serviceMethod)
+                ->build()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     * @param string $presentationService
+     * @param string $serviceMethod
+     * @return RouteCollectionBuilder
+     * @throws InfrastructureException
+     */
+    public function addPOST(string $url, string $presentationService, string $serviceMethod) : RouteCollectionBuilder
+    {
+        $this->routeCollection->add($url,
+            (new RouteBuilder())
+                ->setPath($url)
+                ->setService($presentationService)
+                ->setServiceMethod($serviceMethod)
+                ->setPOST()
+                ->build()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     * @param string $presentationService
+     * @param string $serviceMethod
+     * @return RouteCollectionBuilder
+     * @throws InfrastructureException
+     */
+    public function addPUT(string $url, string $presentationService, string $serviceMethod) : RouteCollectionBuilder
+    {
+        $this->routeCollection->add($url,
+            (new RouteBuilder())
+                ->setPath($url)
+                ->setService($presentationService)
+                ->setServiceMethod($serviceMethod)
+                ->setPUT()
+                ->build()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     * @param string $presentationService
+     * @param string $serviceMethod
+     * @return RouteCollectionBuilder
+     * @throws InfrastructureException
+     */
+    public function addDELETE(string $url, string $presentationService, string $serviceMethod) : RouteCollectionBuilder
+    {
+        $this->routeCollection->add($url,
+            (new RouteBuilder())
+                ->setPath($url)
+                ->setService($presentationService)
+                ->setServiceMethod($serviceMethod)
+                ->setDELETE()
+                ->build()
+        );
+
+        return $this;
+    }
+
+    /**
      * @return RouteCollection
      */
     public function build() : RouteCollection

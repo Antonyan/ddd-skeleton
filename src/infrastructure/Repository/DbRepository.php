@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Infrastructure\Models\SearchCriteria;
+use Infrastructure\Models\SearchCriteria\SearchCriteria;
 
 abstract class DbRepository extends BaseRepository
 {

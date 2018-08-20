@@ -4,7 +4,7 @@ namespace Contexts\RestaurantManagement;
 
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Doctrine\Common\Collections\ArrayCollection;
-use Infrastructure\Models\SearchCriteria;
+use Infrastructure\Models\SearchCriteria\SearchCriteria;
 
 interface RestaurantManagementContract
 {

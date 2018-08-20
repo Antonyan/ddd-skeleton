@@ -9,7 +9,7 @@ use Infrastructure\Models\CreateEntityJsonResponse;
 use Infrastructure\Models\DeleteEntityJsonResponse;
 use Infrastructure\Models\GetEntityJsonResponse;
 use Infrastructure\Models\LoadCollectionJsonResponse;
-use Infrastructure\Models\SearchCriteria;
+use Infrastructure\Models\SearchCriteria\SearchCriteriaQueryString;
 use Infrastructure\Services\BaseService;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -28,7 +28,7 @@ class Restaurant extends BaseService
     public function load(Request $request) : LoadCollectionJsonResponse
     {
         return new LoadCollectionJsonResponse($this->getRestaurantManagement()
-            ->loadRestaurants(new SearchCriteria($request->query->all())));
+            ->loadRestaurants(new SearchCriteriaQueryString($request->query->all())));
     }
 
     /**

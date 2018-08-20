@@ -8,7 +8,7 @@ use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantDbRepo
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
-use Infrastructure\Models\SearchCriteria;
+use Infrastructure\Models\SearchCriteria\SearchCriteria;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 

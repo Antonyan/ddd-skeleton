@@ -1,13 +1,16 @@
 <?php
-
 namespace Infrastructure\Exceptions;
 
-use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
-class ValidationException extends Exception
+class ValidationException extends BaseInternalException
 {
-    public function __construct(array $message, int $code = 0)
+    /**
+     * ValidationException constructor.
+     * @param array $message
+     */
+    public function __construct(array $message)
     {
-        parent::__construct(json_encode($message), $code, null);
+        parent::__construct(json_encode($message), Response::HTTP_BAD_REQUEST);
     }
 }

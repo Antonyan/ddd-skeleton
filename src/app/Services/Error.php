@@ -1,22 +1,13 @@
 <?php
-
 namespace App\Services;
 
-use InvalidArgumentException;
 use Symfony\Component\Debug\Exception\FlattenException;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Error
 {
-    /**
-     * @param FlattenException $exception
-     * @return Response
-     * @throws InvalidArgumentException
-     */
-    public function exception(ResourceNotFoundException $exception)
+    public function handle(FlattenException $exception)
     {
-        $msg = 'Something went wrong! ('.$exception->getMessage().')';
-        return new Response($msg, $exception->getStatusCode());
+        return new JsonResponse(['message' => $exception->getMessage()], $exception->getStatusCode(), $exception->getHeaders());
     }
 }

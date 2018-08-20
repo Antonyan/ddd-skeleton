@@ -10,4 +10,5 @@ modules:
           ph-token: test
     - Db
     - \Helper\RandomGeneratorHelper
+    - Asserts
 

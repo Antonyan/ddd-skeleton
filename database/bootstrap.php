@@ -11,12 +11,8 @@ $config = Setup::createAnnotationMetadataConfiguration([
     __DIR__ . "/../src/contexts/RestaurantManagement/RestaurantAttributeValueModule/Models",
 ], $isDevMode);
 
-$connectionParams = array(
-    'dbname' => 'ddd',
-    'user' => 'root',
-    'password' => 'root',
-    'host' => '127.0.0.1',
-    'driver' => 'pdo_mysql',
-);
+(new \Dotenv\Dotenv(__DIR__.'/../'))->load();
+
+$connectionParams = require(__DIR__ . "/../migrations-db.php");
 
 $entityManager = EntityManager::create($connectionParams, $config);

@@ -1,8 +1,8 @@
 <?php
 return [
-    'dbname' => 'ddd',
-    'user' => 'root',
-    'password' => 'root',
-    'host' => '127.0.0.1',
-    'driver' => 'pdo_mysql',
+    'dbname' => getenv('DDD_RBD_NAME'),
+    'user' => getenv('DDD_RBD_USER'),
+    'password' => getenv('DDD_RBD_PASSWORD'),
+    'host' => getenv('DDD_RBD_HOST'),
+    'driver' => getenv('DDD_RBD_DRIVER'),
 ];

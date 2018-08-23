@@ -17,4 +17,4 @@ $I->haveInDatabase('restaurantAttributeValues', $attributeTwo);
 
 $I->sendGET('restaurants', ['id' => $secondId]);
 
-$I->seeResponseContainsJson(array_merge($secondRestaurant, ['attributes' => []]));
+$I->seeResponseContainsJson(['items' => $secondRestaurant]);

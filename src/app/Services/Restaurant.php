@@ -10,7 +10,6 @@ use Infrastructure\Models\DeleteEntityJsonResponse;
 use Infrastructure\Models\GetEntityJsonResponse;
 use Infrastructure\Models\SearchCriteria\SearchCriteriaQueryString;
 use Infrastructure\Services\BaseService;
-use Infrastructure\Services\FilterBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
 class Restaurant extends BaseService
@@ -28,8 +27,8 @@ class Restaurant extends BaseService
      */
     public function load(Request $request) : GetEntityJsonResponse
     {
-            return new GetEntityJsonResponse($this->getRestaurantManagement()
-            ->loadRestaurants(new SearchCriteriaQueryString($request->query->all()))->toArray());
+        return new GetEntityJsonResponse($this->getRestaurantManagement()
+        ->loadRestaurants(new SearchCriteriaQueryString($request->query->all()))->toArray());
     }
 
     /**
@@ -40,7 +39,7 @@ class Restaurant extends BaseService
      */
     public function create(Request $request) : CreateEntityJsonResponse
     {
-        return new CreateEntityJsonResponse($this->getRestaurantManagement()->create($request->request->all()));
+        return new CreateEntityJsonResponse($this->getRestaurantManagement()->create($request->request->all())->toArray());
     }
 
     /**
@@ -53,7 +52,7 @@ class Restaurant extends BaseService
      */
     public function update(Request $request, $id) : CreateEntityJsonResponse
     {
-        return new CreateEntityJsonResponse($this->getRestaurantManagement()->update($id, $request->request->all()));
+        return new CreateEntityJsonResponse($this->getRestaurantManagement()->update($id, $request->request->all())->toArray());
     }
 
     /**
@@ -74,7 +73,7 @@ class Restaurant extends BaseService
      */
     public function get($id) : GetEntityJsonResponse
     {
-        return new GetEntityJsonResponse($this->getRestaurantManagement()->get($id));
+        return new GetEntityJsonResponse($this->getRestaurantManagement()->get($id)->toArray());
     }
 
     /**

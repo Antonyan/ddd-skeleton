@@ -11,9 +11,9 @@ abstract class BaseMapper
 {
     /**
      * @param array $objectData
-     * @return ArraySerializable
+     * @return mixed
      */
-    abstract protected function buildObject(array $objectData) : ArraySerializable;
+    abstract protected function buildObject(array $objectData);
 
     /**
      * @param array $objectData
@@ -26,15 +26,15 @@ abstract class BaseMapper
 
     /**
      * @param array $objectData
-     * @return ArraySerializable
+     * @return mixed
      */
-    abstract public function create(array $objectData) : ArraySerializable;
+    abstract public function create(array $objectData);
 
     /**
      * @param array $objectData
-     * @return ArraySerializable
+     * @return mixed
      */
-    abstract public function update(array $objectData) : ArraySerializable;
+    abstract public function update(array $objectData);
 
     /**
      * @param SearchCriteria $filter
@@ -49,18 +49,16 @@ abstract class BaseMapper
     abstract public function delete(SearchCriteria $filter) : bool;
 
     /**
-     * @param ArraySerializable $objectData
-     * @param $identifier
+     * @param array $data
      * @return ArraySerializable
      */
-    abstract protected function createObject(ArraySerializable $objectData, $identifier) : ArraySerializable;
+    abstract protected function createObject(array $data) : ArraySerializable;
 
     /**
-     * @param ArraySerializable $objectData
-     * @param array $whereKeys
+     * @param array $data
      * @return ArraySerializable
      */
-    abstract protected function updateObject(ArraySerializable $objectData, array $whereKeys) : ArraySerializable;
+    abstract protected function updateObject(array $data) : ArraySerializable;
 
     /**
      * @param array $objectsParams

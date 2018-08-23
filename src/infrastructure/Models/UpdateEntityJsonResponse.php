@@ -3,13 +3,12 @@
 namespace Infrastructure\Models;
 
 
-class UpdateEntityJsonResponse extends BaseJsonResponse
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+class UpdateEntityJsonResponse extends JsonResponse
 {
-    /**
-     * @return int
-     */
-    protected function statusCode(): int
+    public function __construct(array $data = null)
     {
-        return self::HTTP_OK;
+        parent::__construct($data, self::HTTP_OK);
     }
 }

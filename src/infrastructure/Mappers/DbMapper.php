@@ -94,6 +94,26 @@ abstract class DbMapper extends BaseMapper
     }
 
     /**
+     * @param array $objectData
+     * @return ArraySerializable|mixed
+     * @throws InfrastructureException
+     */
+    public function create(array $objectData)
+    {
+        return $this->createObject($objectData);
+    }
+
+    /**
+     * @param array $objectData
+     * @return ArraySerializable|mixed
+     * @throws InfrastructureException
+     */
+    public function update(array $objectData)
+    {
+        return $this->updateObject($objectData);
+    }
+
+    /**
      * @param array $columnsMap
      * @return array
      */
@@ -107,7 +127,10 @@ abstract class DbMapper extends BaseMapper
         return $asColumns;
     }
 
-
+    /**
+     * @param array $objectData
+     * @return ArraySerializable
+     */
     protected function buildObject(array $objectData) : ArraySerializable
     {
         return $this->getFactory()->create($objectData);
@@ -118,9 +141,14 @@ abstract class DbMapper extends BaseMapper
      * @return ArraySerializable
      * @throws InfrastructureException
      */
-    public function create(array $data) : ArraySerializable
+    protected function createObject(array $data) : ArraySerializable
     {
-        return $this->createObject($this->buildObject($data), $this->getFromConfig(self::CREATE_CONDITION));
+        $identifier = $this->getFromConfig(self::CREATE_CONDITION);
+
+        $qb = new QueryBuilder($this->getFromConfig(self::COLUMNS));
+        $insertQuery = $qb->getInsertQuery($data, $this->getFromConfig(self::TABLE));
+        $this->db->execute($insertQuery->getQuery(), $insertQuery->getBindingValues());
+        return $this->buildObject(array_merge($data, [$identifier => $this->db->lastInsertId()]));
     }
 
     /**
@@ -128,43 +156,18 @@ abstract class DbMapper extends BaseMapper
      * @return ArraySerializable
      * @throws InfrastructureException
      */
-    public function update(array $data) : ArraySerializable
+    protected function updateObject(array $data) : ArraySerializable
     {
-        return $this->updateObject($this->buildObject($data), $this->getFromConfig(self::UPDATE_CONDITION));
-    }
+        $whereKeys = $this->getFromConfig(self::UPDATE_CONDITION);
 
-    /**
-     * @param ArraySerializable $arraySerializable
-     * @param $identifier
-     * @return ArraySerializable
-     * @throws InfrastructureException
-     */
-    protected function createObject(ArraySerializable $arraySerializable, $identifier) : ArraySerializable
-    {
-        $qb = new QueryBuilder($this->getFromConfig(self::COLUMNS));
-        $insertQuery = $qb->getInsertQuery($arraySerializable->toArray(), $this->getFromConfig(self::TABLE));
-        $this->db->execute($insertQuery->getQuery(), $insertQuery->getBindingValues());
-        return $arraySerializable->{'set' . ucfirst($identifier)}($this->db->lastInsertId());
-    }
-
-    /**
-     * @param ArraySerializable $arraySerializable
-     * @param array $whereKeys
-     * @return ArraySerializable
-     * @throws InfrastructureException
-     */
-    protected function updateObject(ArraySerializable $arraySerializable, array $whereKeys) : ArraySerializable
-    {
-        $objectData = $arraySerializable->toArray();
-
-        $updateValues = array_diff_key($objectData, array_flip($whereKeys));
-        $whereValues = array_intersect_key($objectData, array_flip($whereKeys));
+        $updateValues = array_diff_key($data, array_flip($whereKeys));
+        $whereValues = array_intersect_key($data, array_flip($whereKeys));
 
         $qb = new QueryBuilder($this->getFromConfig(self::COLUMNS));
         $updateQuery = $qb->getUpdateQuery($updateValues, $whereValues, $this->getFromConfig(self::TABLE));
 
         $this->db->execute($updateQuery->getQuery(), $updateQuery->getBindingValues());
-        return $arraySerializable;
+        return $this->buildObject($data);
     }
 
     /**

@@ -2,14 +2,12 @@
 
 namespace Infrastructure\Models;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class CreateEntityJsonResponse extends BaseJsonResponse
+class CreateEntityJsonResponse extends JsonResponse
 {
-    /**
-     * @return int
-     */
-    protected function statusCode(): int
+    public function __construct(array $data)
     {
-        return self::HTTP_CREATED;
+        parent::__construct($data, self::HTTP_CREATED);
     }
 }

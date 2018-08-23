@@ -2,14 +2,12 @@
 
 namespace Infrastructure\Models;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class LoadCollectionJsonResponse extends BaseJsonResponse
+class LoadCollectionJsonResponse extends JsonResponse
 {
-    /**
-     * @return int
-     */
-    protected function statusCode(): int
+    public function __construct(array $data)
     {
-        return self::HTTP_OK;
+        parent::__construct($data);
     }
 }

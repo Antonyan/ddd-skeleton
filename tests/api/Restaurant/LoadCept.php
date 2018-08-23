@@ -3,8 +3,8 @@
 $I = new ApiTester($scenario);
 
 $restaurant = ['id' => '120', 'name' => 'Restaurant'];
-$attributeOne = ['id' => '120', 'value' => 'one', 'restaurant_id' => '120'];
-$attributeTwo = ['id' => '121', 'value' => 'two', 'restaurant_id' => '120'];
+$attributeOne = ['id' => '120', 'value' => 'one', 'restaurantId' => '120'];
+$attributeTwo = ['id' => '121', 'value' => 'two', 'restaurantId' => '120'];
 
 $I->haveInDatabase('restaurants', $restaurant);
 $I->haveInDatabase('restaurantAttributeValues', $attributeOne);

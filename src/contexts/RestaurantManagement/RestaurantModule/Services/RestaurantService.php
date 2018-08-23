@@ -5,9 +5,7 @@ namespace Contexts\RestaurantManagement\RestaurantModule\Services;
 use Contexts\RestaurantManagement\RestaurantModule\Mappers\RestaurantAttributeValueDbMapper;
 use Contexts\RestaurantManagement\RestaurantModule\Mappers\RestaurantDbMapper;
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
-use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantAttributeValueDbRepository;
-use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantDbRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Contexts\RestaurantManagement\RestaurantModule\Models\RestaurantAttributeValue;
 use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
 use Infrastructure\Models\PaginationCollection;
@@ -71,6 +69,8 @@ class RestaurantService extends BaseService
      */
     public function delete($id) : bool
     {
+        $this->getRestaurantAttributeValueDbMapper()
+            ->delete(new SearchCriteriaConstructor([new EqualCriteria(RestaurantAttributeValue::RESTAURANT_ID, $id)]));
         return $this->getRestaurantDbMapper()->delete(new SearchCriteriaConstructor([new EqualCriteria('id', $id)]));
     }
 
@@ -83,26 +83,6 @@ class RestaurantService extends BaseService
     public function get($id) : Restaurant
     {
         return $this->getRestaurantDbMapper()->get(['id' => $id]);
-    }
-
-    /**
-     * @return RestaurantDbRepository
-     * @throws InfrastructureException
-     * @throws ReflectionException
-     */
-    private function getRestaurantDbRepository() : RestaurantDbRepository
-    {
-        return $this->container()->get('restaurantDbRepository');
-    }
-
-    /**
-     * @return RestaurantAttributeValueDbRepository
-     * @throws InfrastructureException
-     * @throws ReflectionException
-     */
-    private function getRestaurantAttributeValueDbRepository() : RestaurantAttributeValueDbRepository
-    {
-        return $this->container()->get('restaurantAttributeValueDbRepository');
     }
 
     /**

@@ -3,12 +3,12 @@
 namespace Contexts\RestaurantManagement;
 
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
-use Doctrine\Common\Collections\ArrayCollection;
+use Infrastructure\Models\PaginationCollection;
 use Infrastructure\Models\SearchCriteria\SearchCriteria;
 
 interface RestaurantManagementContract
 {
-    public function loadRestaurants(SearchCriteria $conditions) : ArrayCollection;
+    public function loadRestaurants(SearchCriteria $conditions) : PaginationCollection;
 
     public function create(array $data) : Restaurant;
 

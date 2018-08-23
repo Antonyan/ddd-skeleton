@@ -36,8 +36,9 @@ class OrderBy
     {
         $filteredOrder = strtolower($order);
 
-        if (!\in_array($filteredOrder, ['asc','desc'])){
-            throw new InfrastructureException('Order can be either ASC or DESC');
+        if (!\in_array($filteredOrder, [SearchCriteria::ORDER_ASCENDING, SearchCriteria::ORDER_DESCENDING], true)){
+            throw new InfrastructureException(
+                'Order can be either ' . SearchCriteria::ORDER_ASCENDING . ' or ' . SearchCriteria::ORDER_DESCENDING);
         }
         $this->order = $filteredOrder;
     }

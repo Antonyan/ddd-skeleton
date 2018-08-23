@@ -2,20 +2,23 @@
 
 namespace Contexts\RestaurantManagement\RestaurantModule\Factories;
 
+use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Contexts\RestaurantManagement\RestaurantModule\Models\RestaurantAttributeValue;
 use Infrastructure\Models\ArraySerializable;
 use Infrastructure\Services\BaseFactory;
+use Infrastructure\Services\EntityFactory;
 
-
-class RestaurantAttributeValueFactory extends BaseFactory
+class RestaurantFactory extends BaseFactory
 {
     /**
      * @param array $data
-     * @return RestaurantAttributeValue
+     * @return ArraySerializable
      */
     public function create(array $data) : ArraySerializable
     {
-        return new RestaurantAttributeValue(
-            array_key_exists('id', $data) ? $data['id'] : 0, $data['value'], $data['restaurantId']);
+        return new Restaurant(
+            $this->setDefaultIfNotExists('id', 0, $data),
+            $data['name']
+        );
     }
 }

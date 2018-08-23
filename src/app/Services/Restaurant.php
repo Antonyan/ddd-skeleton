@@ -8,27 +8,28 @@ use Infrastructure\Annotations\Validation;
 use Infrastructure\Models\CreateEntityJsonResponse;
 use Infrastructure\Models\DeleteEntityJsonResponse;
 use Infrastructure\Models\GetEntityJsonResponse;
-use Infrastructure\Models\LoadCollectionJsonResponse;
 use Infrastructure\Models\SearchCriteria\SearchCriteriaQueryString;
 use Infrastructure\Services\BaseService;
+use Infrastructure\Services\FilterBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
 class Restaurant extends BaseService
 {
     /**
      * @Validation(name="id", type="string")
+     * @Validation(name="name", type="string")
      * @Validation(name="limit", type="string")
      * @Validation(name="offset", type="string")
-     * @Validation(name="orderByASC", type="string")
-     * @Validation(name="orderByDESC", type="string")
+     * @Validation(name="orderByAsc", type="string")
+     * @Validation(name="orderByDesc", type="string")
      * @param Request $request
-     * @return LoadCollectionJsonResponse
+     * @return GetEntityJsonResponse
      * @throws Exception
      */
-    public function load(Request $request) : LoadCollectionJsonResponse
+    public function load(Request $request) : GetEntityJsonResponse
     {
-        return new LoadCollectionJsonResponse($this->getRestaurantManagement()
-            ->loadRestaurants(new SearchCriteriaQueryString($request->query->all())));
+            return new GetEntityJsonResponse($this->getRestaurantManagement()
+            ->loadRestaurants(new SearchCriteriaQueryString($request->query->all()))->toArray());
     }
 
     /**

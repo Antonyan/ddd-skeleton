@@ -32,4 +32,12 @@ class InArrayCriteria implements Condition
     {
         return [$this->key => $this->values];
     }
+
+    /**
+     * @return string
+     */
+    public function type(): string
+    {
+        return SearchCriteria::WHERE_IN;
+    }
 }

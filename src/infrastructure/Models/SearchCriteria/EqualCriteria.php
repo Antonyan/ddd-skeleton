@@ -32,4 +32,12 @@ class EqualCriteria implements Condition
     {
         return [$this->key => $this->value];
     }
+
+    /**
+     * @return string
+     */
+    public function type(): string
+    {
+        return SearchCriteria::WHERE_EQUAL_SIGN;
+    }
 }

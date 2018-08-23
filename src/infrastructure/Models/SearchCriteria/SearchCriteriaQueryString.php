@@ -2,16 +2,8 @@
 
 namespace Infrastructure\Models\SearchCriteria;
 
-class SearchCriteriaQueryString implements SearchCriteria
+class SearchCriteriaQueryString extends SearchCriteria
 {
-    private const CONDITIONS = 'conditions';
-    private const LIMIT = 'limit';
-    private const OFFSET = 'offset';
-    private const ORDER_BY = 'orderBy';
-    private const ORDER_BY_ASC = 'orderByASC';
-    private const ORDER_BY_DESC = 'orderByDESC';
-    private const MAX_LIMIT = 100;
-    
     /**
      * @var array
      */
@@ -20,7 +12,42 @@ class SearchCriteriaQueryString implements SearchCriteria
     /**
      * @var array
      */
-    private $parsedCriteria;
+    private $nameOfDateFields;
+
+    /**
+     * @var array
+     */
+    private $conditions = [];
+
+    /**
+     * @var int
+     */
+    private $limit = 100;
+
+    /**
+     * @var int
+     */
+    private $offset = 0;
+
+    /**
+     * @var array
+     */
+    private $types = [];
+
+    /**
+     * @var array
+     */
+    private $orderBy = [];
+
+    /**
+     * @var array
+     */
+    private $groupBy = [];
+
+    /**
+     * @var bool
+     */
+    private $criteriaParsed = false;
 
     /**
      * Constructor receive array with data from query string
@@ -28,38 +55,12 @@ class SearchCriteriaQueryString implements SearchCriteria
      * And it would be parsed by Symfony as ['id' => '1,2,5', 'name' => 'Ivanov', 'orderByACS' => 'name']
      * SearchCriteria constructor.
      * @param array $criteria
+     * @param array $nameOfDateFields
      */
-    public function __construct(array $criteria)
+    public function __construct(array $criteria, array $nameOfDateFields = [])
     {
         $this->criteria = $criteria;
-    }
-
-    /**
-     * @return int
-     */
-    public function limit() : int
-    {
-        return array_key_exists(self::LIMIT, $this->parsedCriteria())
-        && $this->parsedCriteria()[self::LIMIT] < self::MAX_LIMIT ?
-            $this->parsedCriteria()[self::LIMIT] : self::MAX_LIMIT;
-    }
-
-    /**
-     * @return int
-     */
-    public function offset() : int
-    {
-        return array_key_exists(self::OFFSET, $this->parsedCriteria()) ?
-            $this->parsedCriteria()[self::OFFSET] : 0;
-    }
-
-    /**
-     * @return array
-     */
-    public function orderBy() : array
-    {
-        return array_key_exists(self::ORDER_BY, $this->parsedCriteria()) ?
-            $this->parsedCriteria()[self::ORDER_BY] : [];
+        $this->nameOfDateFields = $nameOfDateFields;
     }
 
     /**
@@ -67,38 +68,89 @@ class SearchCriteriaQueryString implements SearchCriteria
      */
     public function conditions() : array
     {
-        return array_key_exists(self::CONDITIONS, $this->parsedCriteria()) ?
-            $this->parsedCriteria()[self::CONDITIONS] : [];
+        return $this->parseCriteria()->conditions;
+    }
+
+    /**
+     * @return int
+     */
+    public function limit() : int
+    {
+        return $this->parseCriteria()->limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function offset() : int
+    {
+        return $this->parseCriteria()->offset;
     }
 
     /**
      * @return array
      */
-    private function parsedCriteria() : array
+    public function orderBy() : array
     {
-        if ($this->parsedCriteria) {
-            return $this->parsedCriteria;
+        return $this->parseCriteria()->orderBy;
+    }
+
+    /**
+     * @return array
+     */
+    public function groupBy() : array
+    {
+        return $this->parseCriteria()->groupBy;
+    }
+
+    /**
+     * @param $field
+     * @return bool
+     */
+    public function isSetType($field) : bool
+    {
+        return isset($this->parseCriteria()->types[$field]);
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    public function getType($field) : string
+    {
+        return $this->parseCriteria()->types[$field];
+    }
+
+    /**
+     * @return SearchCriteriaQueryString
+     */
+    private function parseCriteria() : SearchCriteria
+    {
+        if ($this->criteriaParsed){
+            return $this;
         }
 
-        $this->parsedCriteria[self::CONDITIONS] = [];
-
-        foreach ($this->criteria as $key => $criterion) {
-
-            if (array_key_exists($key, $this->conversionMap())){
-                $this->conversionMap()[$key]($criterion);
-                unset($this->criteria[$key]);
+        foreach ($this->criteria as $field => $value) {
+            if (\in_array($field, $this->nameOfDateFields, true)) {
+                $this->addDateCondition($field, $value);
                 continue;
             }
 
-            if (strpos($criterion, ',')){
-                $this->parsedCriteria[self::CONDITIONS] = [$key => explode(',', $criterion)];
-                unset($this->criteria[$key]);
+            if (array_key_exists($field, $this->conversionMap())){
+                $this->conversionMap()[$field]($value);
+                continue;
             }
+
+            if (strpos($value, ',')) {
+                $this->addInCondition($field, explode(',', $value));
+                continue;
+            }
+            $this->addEqualCondition($field, $value);
         }
 
-        $this->parsedCriteria[self::CONDITIONS] = array_merge($this->criteria, $this->parsedCriteria[self::CONDITIONS]);
+        $this->criteriaParsed = true;
 
-        return $this->parsedCriteria;
+        return $this;
     }
 
     /**
@@ -107,10 +159,264 @@ class SearchCriteriaQueryString implements SearchCriteria
     private function conversionMap() : array
     {
         return [
-            self::LIMIT => function($value) { $this->parsedCriteria[self::LIMIT] = $value;},
-            self::OFFSET => function($value) { $this->parsedCriteria[self::OFFSET] = $value;},
-            self::ORDER_BY_ASC => function($value) { $this->parsedCriteria[self::ORDER_BY] = [$value => 'asc'];},
-            self::ORDER_BY_DESC => function($value) { $this->parsedCriteria[self::ORDER_BY] = [$value => 'desc'];},
+            self::LIMIT => function($value) { $this->limit = $this->limit <= self::MAX_LIMIT ? $value : self::MAX_LIMIT;},
+            self::OFFSET => function($value) { $this->offset = $value;},
+            self::ORDER_ASCENDING => function($value) { $this->addOrderByAscending($value);},
+            self::ORDER_DESCENDING => function($value) { $this->addOrderByDescending($value);},
+            self::WHERE_LIKE => function($value) {
+                foreach ($value as $innerField => $innerValue) {
+                    $this->addLikeCondition($innerField, $innerValue);}
+            },
+            self::WHERE_EQUAL => function($value) { $this->addArrayEqualCondition($value);},
+            self::WHERE_LESS => function($value) { $this->addArrayLessCondition($value);},
+            self::WHERE_LESS_OR_EQUAL => function($value) { $this->addArrayLessOrEqualCondition($value);},
+            self::WHERE_GREATER => function($value) { $this->addArrayGreaterCondition($value);},
+            self::WHERE_GREATER_OR_EQUAL => function($value) { $this->addArrayGreaterOrEqualCondition($value);},
         ];
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addEqualCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_EQUAL_SIGN][$field] = $value;
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addInCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_IN][$field] = $value;
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addLikeCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_LIKE][$field] = '%'.$value.'%';
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addLessCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_LESS_SIGN][$field] = $value;
+        $this->addFieldType($field, self::TYPE_DECIMAL);
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addLessOrEqualCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_LESS_OR_EQUAL_SIGN][$field] = $value;
+        $this->addFieldType($field, self::TYPE_DECIMAL);
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addGreaterCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_GREATER_SIGN][$field] = $value;
+        $this->addFieldType($field, self::TYPE_DECIMAL);
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addGreaterOrEqualCondition($field, $value) : SearchCriteria
+    {
+        $this->conditions[self::WHERE_GREATER_OR_EQUAL_SIGN][$field] = $value;
+        $this->addFieldType($field, self::TYPE_DECIMAL);
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addDateCondition($field, $value) : SearchCriteria
+    {
+        if (is_array($value)) {
+            if (count($value) == 2) {
+                $this->conditions[self::WHERE_GREATER_OR_EQUAL_SIGN][$field] = date('Y-m-d 00:00:00', strtotime($value[0]));
+                $this->conditions[self::WHERE_LESS_OR_EQUAL_SIGN][$field] = date('Y-m-d 23:59:59', strtotime($value[1]));
+            }
+        } else {
+            $this->conditions[self::WHERE_GREATER_OR_EQUAL_SIGN][$field] = date('Y-m-d 00:00:00', strtotime($value));
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return SearchCriteria
+     */
+    private function addDateTimeInTimestampCondition($field, $value) : SearchCriteria
+    {
+        if (is_array($value)) {
+            if (count($value) == 2) {
+                $this->conditions[self::WHERE_GREATER_OR_EQUAL_SIGN][$field] = date('Y-m-d H:i:s', $value[0]);
+                $this->conditions[self::WHERE_LESS_SIGN][$field] = date('Y-m-d H:i:s', $value[1]);
+            }
+        } else {
+            $this->conditions[self::WHERE_GREATER_OR_EQUAL_SIGN][$field] = date('Y-m-d H:i:s', $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return SearchCriteria
+     */
+    private function addArrayEqualCondition(array $values) : SearchCriteria
+    {
+        foreach ($values as $field => $value) {
+            $this->addEqualCondition($field, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return SearchCriteria
+     */
+    private function addArrayLessCondition(array $values) : SearchCriteria
+    {
+        foreach ($values as $field => $value) {
+            $this->addLessCondition($field, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return SearchCriteria
+     */
+    private function addArrayLessOrEqualCondition(array $values) : SearchCriteria
+    {
+        foreach ($values as $field => $value) {
+            $this->addLessOrEqualCondition($field, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return SearchCriteria
+     */
+    private function addArrayGreaterCondition(array $values) : SearchCriteria
+    {
+        foreach ($values as $field => $value) {
+            $this->addGreaterCondition($field, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
+    private function addArrayGreaterOrEqualCondition(array $values) : SearchCriteria
+    {
+        foreach ($values as $field => $value) {
+            $this->addGreaterOrEqualCondition($field, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @return SearchCriteria
+     */
+    private function addOrderByAscending($field) : SearchCriteria
+    {
+        if (\is_array($field)) {
+            foreach ($field as $singleField) {
+                $this->orderBy[$singleField] = self::ORDER_ASCENDING;
+            }
+            return $this;
+        }
+        $this->orderBy[$field] = self::ORDER_ASCENDING;
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @return SearchCriteria
+     */
+    private function addOrderByDescending($field) : SearchCriteria
+    {
+        if (\is_array($field)) {
+            foreach ($field as $singleField) {
+                $this->orderBy[$singleField] = self::ORDER_DESCENDING;
+            }
+
+            return $this;
+        }
+        $this->orderBy[$field] = self::ORDER_DESCENDING;
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @return SearchCriteria
+     */
+    private function addGroupBy($field) : SearchCriteria
+    {
+        $this->groupBy[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @param $type
+     * @return SearchCriteria
+     */
+    private function addFieldType($field, $type) : SearchCriteria
+    {
+        $this->types[$field] = $type;
+        return $this;
     }
 }

@@ -7,8 +7,8 @@ $secondId = $I->randomId();
 
 $restaurant = ['id' => $firstId, 'name' => 'Restaurant'];
 $secondRestaurant = ['id' => $secondId, 'name' => 'RestaurantSecond'];
-$attributeOne = ['id' => $I->randomId(), 'value' => 'one', 'restaurant_id' => $firstId];
-$attributeTwo = ['id' => $I->randomId(), 'value' => 'two', 'restaurant_id' => $firstId];
+$attributeOne = ['id' => $I->randomId(), 'value' => 'one', 'restaurantId' => $firstId];
+$attributeTwo = ['id' => $I->randomId(), 'value' => 'two', 'restaurantId' => $firstId];
 
 $I->haveInDatabase('restaurants', $restaurant);
 $I->haveInDatabase('restaurants', $secondRestaurant);

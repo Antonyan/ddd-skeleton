@@ -19,3 +19,6 @@ $containerBuilder->register('serializer', Serializer::class)
 
 $containerBuilder->register('associationsSerializer', AssociationsSerializer::class);
 
+$containerBuilder->register('db', \Infrastructure\Services\DbConnection::class)
+    ->addArgument($containerBuilder->get('config')->database);
+

@@ -2,10 +2,8 @@
 
 namespace Infrastructure\Models\SearchCriteria;
 
-class SearchCriteriaConstructor implements SearchCriteria
+class SearchCriteriaConstructor extends SearchCriteria
 {
-    private const MAX_LIMIT = 100;
-
     /**
      * @var Condition[]
      */
@@ -62,7 +60,30 @@ class SearchCriteriaConstructor implements SearchCriteria
      */
     public function orderBy() : array
     {
+        if (!$this->orderBy){
+            return [];
+        }
+
         return $this->orderBy->toOrderCondition();
+    }
+
+    /**
+     * @return array
+     */
+    public function groupBy() : array
+    {
+        //TODO: implement
+        return [];
+    }
+
+    /**
+     * @param $field
+     * @return bool
+     */
+    public function isSetType($field) : bool
+    {
+        //TODO: support Dates
+        return false;
     }
 
     /**
@@ -72,7 +93,11 @@ class SearchCriteriaConstructor implements SearchCriteria
     {
         $conditions = [];
         foreach ($this->conditions as $condition) {
-            $conditions = array_merge($conditions, $condition->toCondition());
+            $conditionValue = $condition->toCondition();
+            if (empty($conditionValue)){
+                continue;
+            }
+            $conditions[$condition->type()][key($conditionValue)] = current($conditionValue);
         }
 
         return $conditions;

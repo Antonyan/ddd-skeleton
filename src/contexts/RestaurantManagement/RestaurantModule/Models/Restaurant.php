@@ -8,11 +8,12 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
+use Infrastructure\Models\ArraySerializable;
 
 /**
  * @Entity @Table(name="restaurants")
  */
-class Restaurant
+class Restaurant implements ArraySerializable
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
@@ -21,13 +22,20 @@ class Restaurant
     private $name;
 
     /**
-     * @OneToMany(targetEntity="Contexts\RestaurantManagement\RestaurantModule\Models\RestaurantAttributeValue", mappedBy="restaurant", orphanRemoval=true)
+     * @OneToMany(targetEntity="Contexts\RestaurantManagement\RestaurantModule\Models\RestaurantAttributeValue", mappedBy="restaurantId", orphanRemoval=true)
      * @var Collection
      */
     private $attributes = null;
 
-    public function __construct()
+    /**
+     * Restaurant constructor.
+     * @param $id
+     * @param $name
+     */
+    public function __construct($id, $name)
     {
+        $this->id = $id;
+        $this->name = $name;
         $this->attributes = new ArrayCollection();
     }
 
@@ -83,5 +91,16 @@ class Restaurant
     {
         $this->attributes = $attributes;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
     }
 }

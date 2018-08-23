@@ -2,13 +2,18 @@
 
 namespace Contexts\RestaurantManagement\RestaurantModule\Services;
 
+use Contexts\RestaurantManagement\RestaurantModule\Mappers\RestaurantAttributeValueDbMapper;
+use Contexts\RestaurantManagement\RestaurantModule\Mappers\RestaurantDbMapper;
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantAttributeValueDbRepository;
 use Contexts\RestaurantManagement\RestaurantModule\Repositories\RestaurantDbRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
+use Infrastructure\Models\PaginationCollection;
+use Infrastructure\Models\SearchCriteria\EqualCriteria;
 use Infrastructure\Models\SearchCriteria\SearchCriteria;
+use Infrastructure\Models\SearchCriteria\SearchCriteriaConstructor;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
 
@@ -16,13 +21,13 @@ class RestaurantService extends BaseService
 {
     /**
      * @param SearchCriteria $conditions
-     * @return ArrayCollection
+     * @return PaginationCollection
      * @throws InfrastructureException
      * @throws ReflectionException
      */
-    public function load(SearchCriteria $conditions) : ArrayCollection
+    public function load(SearchCriteria $conditions) : PaginationCollection
     {
-        return $this->getRestaurantDbRepository()->load($conditions);
+        return $this->getRestaurantDbMapper()->load($conditions);
     }
 
     /**
@@ -35,7 +40,7 @@ class RestaurantService extends BaseService
     public function create(array $data) : Restaurant
     {
         $data['id'] = 0;
-        return $this->getRestaurantDbRepository()->create($data);
+        return $this->getRestaurantDbMapper()->create($data);
     }
 
     /**
@@ -46,12 +51,14 @@ class RestaurantService extends BaseService
      */
     public function update($id, array $data) : Restaurant
     {
+        //TODO: create batch update
         if (array_key_exists('attributes', $data) && !empty($data['attributes'])){
-            $this->getRestaurantAttributeValueDbRepository()
-                ->batchUpdate($data['attributes']);
+            foreach ($data['attributes'] as $attribute) {
+                $this->getRestaurantAttributeValueDbMapper()->update($attribute);
+            }
         }
 
-        $this->getRestaurantDbRepository()->update(array_merge(['id' => $id], $data));
+        $this->getRestaurantDbMapper()->update(array_merge(['id' => $id], $data));
 
         return $this->get($id);
     }
@@ -64,7 +71,7 @@ class RestaurantService extends BaseService
      */
     public function delete($id) : bool
     {
-        return $this->getRestaurantDbRepository()->delete($id);
+        return $this->getRestaurantDbMapper()->delete(new SearchCriteriaConstructor([new EqualCriteria('id', $id)]));
     }
 
     /**
@@ -75,7 +82,7 @@ class RestaurantService extends BaseService
      */
     public function get($id) : Restaurant
     {
-        return $this->getRestaurantDbRepository()->get($id);
+        return $this->getRestaurantDbMapper()->get(['id' => $id]);
     }
 
     /**
@@ -96,5 +103,25 @@ class RestaurantService extends BaseService
     private function getRestaurantAttributeValueDbRepository() : RestaurantAttributeValueDbRepository
     {
         return $this->container()->get('restaurantAttributeValueDbRepository');
+    }
+
+    /**
+     * @return RestaurantDbMapper
+     * @throws InfrastructureException
+     * @throws ReflectionException
+     */
+    private function getRestaurantDbMapper() : RestaurantDbMapper
+    {
+        return $this->container()->get('restaurantDbMapper');
+    }
+
+    /**
+     * @return RestaurantAttributeValueDbMapper
+     * @throws InfrastructureException
+     * @throws ReflectionException
+     */
+    private function getRestaurantAttributeValueDbMapper() : RestaurantAttributeValueDbMapper
+    {
+        return $this->container()->get('restaurantAttributeValueDbMapper');
     }
 }

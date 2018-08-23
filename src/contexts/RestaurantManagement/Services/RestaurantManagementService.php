@@ -5,11 +5,11 @@ namespace Contexts\RestaurantManagement\Services;
 use Contexts\RestaurantManagement\RestaurantManagementContract;
 use Contexts\RestaurantManagement\RestaurantModule\Models\Restaurant;
 use Contexts\RestaurantManagement\RestaurantModule\Services\RestaurantService;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use Infrastructure\Exceptions\InfrastructureException;
+use Infrastructure\Models\PaginationCollection;
 use Infrastructure\Models\SearchCriteria\SearchCriteria;
 use Infrastructure\Services\BaseService;
 use ReflectionException;
@@ -18,12 +18,11 @@ class RestaurantManagementService extends BaseService implements RestaurantManag
 {
     /**
      * @param SearchCriteria $conditions
-     * @return ArrayCollection
+     * @return PaginationCollection
      * @throws InfrastructureException
      * @throws ReflectionException
-     * @throws Exception
      */
-    public function loadRestaurants(SearchCriteria $conditions) : ArrayCollection
+    public function loadRestaurants(SearchCriteria $conditions): PaginationCollection
     {
         return $this->getRestaurantService()->load($conditions);
     }

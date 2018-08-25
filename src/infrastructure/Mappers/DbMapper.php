@@ -74,7 +74,7 @@ abstract class DbMapper extends BaseMapper
         try {
             $whereQueryPart = $queryBuilder->generateWhere($filter);
         } catch (QueryBuilderEmptyInQueryException $exception) {
-            return new PaginationCollection(0, $filter->getLimit(), $filter->getOffset());
+            return new PaginationCollection(0, $filter->limit(), $filter->offset());
         }
         $query =
             $this->getSelectQuery().' '.

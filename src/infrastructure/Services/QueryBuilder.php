@@ -95,6 +95,10 @@ class QueryBuilder
         return 'CAST('.$this->getColumns()[$field].' AS '.$filter->getType($field).')';
     }
 
+    /**
+     * @param SearchCriteria $filter
+     * @return string
+     */
     public function generateLimit(SearchCriteria $filter)
     {
         if ($filter->limit() === DbMapper::SELECT_LIMIT_ALL) {

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'RestaurantDbMapper' => [
+    'RestaurantDbTranslator' => [
         'table' => 'restaurants',
         'columns' => [
             'id'   => 'restaurants.id',
@@ -11,7 +11,7 @@ return [
         'update' => ['id'],
     ],
 
-    'RestaurantAttributeValueDbMapper' => [
+    'RestaurantAttributeValueDbTranslator' => [
         'table' => 'restaurantAttributeValues',
         'columns' => [
             'id'   => 'restaurantAttributeValues.id',

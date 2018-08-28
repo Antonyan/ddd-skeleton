@@ -41,11 +41,6 @@ abstract class DbMapper extends BaseMapper
     private $factory;
 
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
      * @var MySQLClient
      */
     private $mySqlClient;
@@ -58,18 +53,17 @@ abstract class DbMapper extends BaseMapper
     /**
      * DbMapper constructor.
      * @param BaseFactory $factory
-     * @param array $config
+     * @param EntityToDataSourceTranslator $entityToDataSourceTranslator
      * @param MySQLClient $mySqlClient
      */
     public function __construct(
         BaseFactory $factory,
-        array $config,
+        EntityToDataSourceTranslator $entityToDataSourceTranslator,
         MySQLClient $mySqlClient
     ) {
         $this->factory = $factory;
-        $this->config = $config;
         $this->mySqlClient = $mySqlClient;
-        $this->entityToDataSourceTranslator = new EntityToDataSourceTranslator($config);
+        $this->entityToDataSourceTranslator = $entityToDataSourceTranslator;
     }
 
     /**
@@ -80,7 +74,7 @@ abstract class DbMapper extends BaseMapper
     public function load(SearchCriteria $filter) : PaginationCollection
     {
         /** @var SearchCriteriaQueryString $filter */
-        $queryBuilder = new FilterToQueryTranslator($this->getFromConfig(self::COLUMNS));
+        $queryBuilder = new FilterToQueryTranslator($this->entityToDataSourceTranslator->propertyToColumnMap());
         try {
             $whereQueryPart = $queryBuilder->generateWhere($filter);
         } catch (QueryBuilderEmptyInQueryException $exception) {
@@ -125,14 +119,13 @@ abstract class DbMapper extends BaseMapper
     }
 
     /**
-     * @param array $columnsMap
      * @return array
      */
-    protected function getAsColumns(array $columnsMap) : array
+    protected function getAsColumns() : array
     {
         $asColumns = [];
-        foreach ($columnsMap as $modelField => $dbColumn) {
-            $asColumns[] = $modelField == $dbColumn ? $dbColumn : $dbColumn.' as `'.$modelField.'`';
+        foreach ($this->entityToDataSourceTranslator->propertyToColumnMap() as $modelField => $dbColumn) {
+            $asColumns[] = $modelField === $dbColumn ? $dbColumn : $dbColumn.' as `'.$modelField.'`';
         }
 
         return $asColumns;
@@ -193,12 +186,11 @@ abstract class DbMapper extends BaseMapper
 
     /**
      * @return string
-     * @throws InfrastructureException
      */
     protected function getSelectQuery() : string
     {
-        return 'SELECT SQL_CALC_FOUND_ROWS '.implode(', ', $this->getAsColumns($this->getFromConfig(self::COLUMNS))).' FROM '.
-               $this->getFromConfig(self::TABLE) .' '. $this->getJoins().' ';
+        return 'SELECT SQL_CALC_FOUND_ROWS '.implode(', ', $this->getAsColumns()).' FROM '.
+               $this->entityToDataSourceTranslator->table() .' '. $this->getJoins().' ';
     }
 
     /**
@@ -226,7 +218,7 @@ abstract class DbMapper extends BaseMapper
      */
     public function delete(string $byPropertyName, $propertyValue) : bool
     {
-        $this->mySqlClient->delete($this->getFromConfig(self::TABLE), [$byPropertyName => $propertyValue]);
+        $this->mySqlClient->delete($this->entityToDataSourceTranslator->table(), [$byPropertyName => $propertyValue]);
         return true;
     }
 
@@ -247,31 +239,16 @@ abstract class DbMapper extends BaseMapper
     }
 
     /**
-     * @param $name
-     * @return mixed
-     * @throws InfrastructureException
-     */
-    protected function getFromConfig($name)
-    {
-        if(!array_key_exists($name, $this->config)){
-            throw new InfrastructureException('There are no ' . $name . ' field in config');
-        }
-
-        return $this->config[$name];
-    }
-
-    /**
      * @param array $data
      * @return array
-     * @throws InfrastructureException
      */
     protected function getColumnValue(array $data): array
     {
-        $filteredFields = array_intersect_key($data, $this->getFromConfig(self::COLUMNS));
+        $filteredFields = array_intersect_key($data, $this->entityToDataSourceTranslator->propertyToColumnMap());
 
         $columnValue = [];
         foreach ($filteredFields as $key => $value) {
-            $columnValue[$this->getFromConfig(self::COLUMNS)[$key]] = $value;
+            $columnValue[$this->entityToDataSourceTranslator->propertyToColumnMap()[$key]] = $value;
         }
 
         return $columnValue;

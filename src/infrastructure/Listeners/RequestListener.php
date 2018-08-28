@@ -20,6 +20,23 @@ class RequestListener
         $validator->validate(array_merge($event->getRequest()->request->all(), $event->getRequest()->query->all()));
 
         $this->filterRequest($event, $validationRulesReader);
+
+        //query string preprocessor
+
+        $queryData = $event->getRequest()->query->all();
+        $processedQueryData = [];
+
+        foreach ($queryData as $parameterName => $parameterValue) {
+            $processedQueryParameter = trim($parameterValue, '()');
+
+            if (strpos($processedQueryParameter, '|')){
+                $processedQueryParameter = explode('|', $processedQueryParameter);
+            }
+
+            $processedQueryData[$parameterName] = $processedQueryParameter;
+        }
+
+        $event->getRequest()->query->replace($processedQueryData);
     }
 
     /**

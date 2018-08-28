@@ -145,6 +145,7 @@ class SearchCriteriaQueryString extends SearchCriteria
                 $this->addInCondition($field, explode(',', $value));
                 continue;
             }
+
             $this->addEqualCondition($field, $value);
         }
 

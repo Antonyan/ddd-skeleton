@@ -6,6 +6,9 @@ use Infrastructure\Models\ArraySerializable;
 
 class Restaurant implements ArraySerializable
 {
+    public const ID = 'id';
+    public const NAME = 'name';
+
     /**
      * @var int
      */

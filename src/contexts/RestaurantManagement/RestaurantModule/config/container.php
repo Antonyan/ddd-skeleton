@@ -17,14 +17,15 @@ $containerBuilder->register('restaurantDbMapper', RestaurantDbMapper::class)
 $containerBuilder->register('restaurantFactory', RestaurantFactory::class);
 
 $containerBuilder->register('restaurantDbMapper', RestaurantDbMapper::class)
-    ->addArgument(new Reference('db'))
     ->addArgument(new Reference('restaurantFactory'))
-    ->addArgument($containerBuilder->get('config')->RestaurantDbMapper);
+    ->addArgument($containerBuilder->get('config')->RestaurantDbMapper)
+    ->addArgument(new Reference('MySqlClient'));
 
 $containerBuilder->register('restaurantAttributeValueDbMapper', RestaurantAttributeValueDbMapper::class)
-    ->addArgument(new Reference('db'))
     ->addArgument(new Reference('restaurantAttributeValueFactory'))
-    ->addArgument($containerBuilder->get('config')->RestaurantAttributeValueDbMapper);
+    ->addArgument($containerBuilder->get('config')->RestaurantAttributeValueDbMapper)
+    ->addArgument(new Reference('MySqlClient'));
+
 
 
 

@@ -21,6 +21,8 @@ class Restaurant extends BaseService
      * @Validation(name="offset", type="string")
      * @Validation(name="orderByAsc", type="string")
      * @Validation(name="orderByDesc", type="string")
+     * @Validation(name="like", type="string")
+     * @Validation(name="gt", type="string")
      * @param Request $request
      * @return GetEntityJsonResponse
      * @throws Exception

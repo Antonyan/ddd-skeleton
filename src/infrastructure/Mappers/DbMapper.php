@@ -5,39 +5,35 @@ namespace Infrastructure\Mappers;
 use Infrastructure\Exceptions\InfrastructureException;
 use Infrastructure\Exceptions\QueryBuilderEmptyInQueryException;
 use Infrastructure\Models\ArraySerializable;
+use Infrastructure\Models\EntityToDataSourceTranslator;
 use Infrastructure\Models\PaginationCollection;
 use Infrastructure\Models\SearchCriteria\EqualCriteria;
 use Infrastructure\Models\SearchCriteria\SearchCriteria;
 use Infrastructure\Models\SearchCriteria\SearchCriteriaConstructor;
 use Infrastructure\Models\SearchCriteria\SearchCriteriaQueryString;
 use Infrastructure\Services\BaseFactory;
-use Infrastructure\Services\DbConnection;
-use Infrastructure\Services\QueryBuilder;
+use Infrastructure\Services\FilterToQueryTranslator;
+use Infrastructure\Services\MySQLClient;
 
 abstract class DbMapper extends BaseMapper
 {
     /**
      * Signs for where conditions.
      */
-    const EQUAL_SIGN = '=';
-    const GREATER_SIGN = '>';
-    const LESS_SIGN = '<';
-    const GREATER_OR_EQUAL_SIGN = '>=';
-    const LESS_OR_EQUAL_SIGN = '<=';
-    const IN_SIGN = 'in';
-    const LIKE_SIGN = 'like';
+    public const EQUAL_SIGN = '=';
+    public const GREATER_SIGN = '>';
+    public const LESS_SIGN = '<';
+    public const GREATER_OR_EQUAL_SIGN = '>=';
+    public const LESS_OR_EQUAL_SIGN = '<=';
+    public const IN_SIGN = 'in';
+    public const LIKE_SIGN = 'like';
 
-    const SELECT_LIMIT_ALL = 'selectLimitAll';
+    public const SELECT_LIMIT_ALL = 'selectLimitAll';
 
-    const TABLE = 'table';
-    const COLUMNS = 'columns';
-    const CREATE_CONDITION = 'create';
-    const UPDATE_CONDITION = 'update';
-
-    /**
-     * @var DbConnection
-     */
-    private $db;
+    public const TABLE = 'table';
+    public const COLUMNS = 'columns';
+    public const CREATE_CONDITION = 'create';
+    public const UPDATE_CONDITION = 'update';
 
     /**
      * @var BaseFactory
@@ -50,16 +46,30 @@ abstract class DbMapper extends BaseMapper
     private $config;
 
     /**
+     * @var MySQLClient
+     */
+    private $mySqlClient;
+
+    /**
+     * @var EntityToDataSourceTranslator
+     */
+    private $entityToDataSourceTranslator;
+
+    /**
      * DbMapper constructor.
-     * @param DbConnection $db
      * @param BaseFactory $factory
      * @param array $config
+     * @param MySQLClient $mySqlClient
      */
-    public function __construct(DbConnection $db, BaseFactory $factory, array $config)
-    {
-        $this->db = $db;
+    public function __construct(
+        BaseFactory $factory,
+        array $config,
+        MySQLClient $mySqlClient
+    ) {
         $this->factory = $factory;
         $this->config = $config;
+        $this->mySqlClient = $mySqlClient;
+        $this->entityToDataSourceTranslator = new EntityToDataSourceTranslator($config);
     }
 
     /**
@@ -70,12 +80,13 @@ abstract class DbMapper extends BaseMapper
     public function load(SearchCriteria $filter) : PaginationCollection
     {
         /** @var SearchCriteriaQueryString $filter */
-        $queryBuilder = new QueryBuilder($this->getFromConfig(self::COLUMNS));
+        $queryBuilder = new FilterToQueryTranslator($this->getFromConfig(self::COLUMNS));
         try {
             $whereQueryPart = $queryBuilder->generateWhere($filter);
         } catch (QueryBuilderEmptyInQueryException $exception) {
             return new PaginationCollection(0, $filter->limit(), $filter->offset());
         }
+
         $query =
             $this->getSelectQuery().' '.
             $whereQueryPart->getQuery().' '.
@@ -84,7 +95,7 @@ abstract class DbMapper extends BaseMapper
             $queryBuilder->generateLimit($filter);
 
         $collection = $this->buildPaginationCollection(
-            $this->db->execute($query, $whereQueryPart->getBindingValues())->fetchAll(),
+            $this->mySqlClient->fetchAll($query, $whereQueryPart->getBindingValues()),
             $this->getLoadTotalCount(),
             $filter->limit(),
             $filter->offset()
@@ -143,12 +154,10 @@ abstract class DbMapper extends BaseMapper
      */
     protected function createObject(array $data) : ArraySerializable
     {
-        $identifier = $this->getFromConfig(self::CREATE_CONDITION);
-
-        $qb = new QueryBuilder($this->getFromConfig(self::COLUMNS));
-        $insertQuery = $qb->getInsertQuery($data, $this->getFromConfig(self::TABLE));
-        $this->db->execute($insertQuery->getQuery(), $insertQuery->getBindingValues());
-        return $this->buildObject(array_merge($data, [$identifier => $this->db->lastInsertId()]));
+        return $this->buildObject(array_merge($data,
+            [$this->entityToDataSourceTranslator->insertIdentifier() => $this->mySqlClient->insert(
+                $this->entityToDataSourceTranslator->table(),
+                $this->entityToDataSourceTranslator->translatePropertyInColumn($data))]));
     }
 
     /**
@@ -158,15 +167,12 @@ abstract class DbMapper extends BaseMapper
      */
     protected function updateObject(array $data) : ArraySerializable
     {
-        $whereKeys = $this->getFromConfig(self::UPDATE_CONDITION);
+        $this->mySqlClient->update(
+            $this->entityToDataSourceTranslator->table(),
+            $this->entityToDataSourceTranslator->extractUpdateParams($data),
+            $this->entityToDataSourceTranslator->extractUpdateIdentifiers($data)
+        );
 
-        $updateValues = array_diff_key($data, array_flip($whereKeys));
-        $whereValues = array_intersect_key($data, array_flip($whereKeys));
-
-        $qb = new QueryBuilder($this->getFromConfig(self::COLUMNS));
-        $updateQuery = $qb->getUpdateQuery($updateValues, $whereValues, $this->getFromConfig(self::TABLE));
-
-        $this->db->execute($updateQuery->getQuery(), $updateQuery->getBindingValues());
         return $this->buildObject($data);
     }
 
@@ -197,15 +203,6 @@ abstract class DbMapper extends BaseMapper
 
     /**
      * @return string
-     * @throws InfrastructureException
-     */
-    protected function getDeleteQuery() : string
-    {
-        return 'DELETE '.$this->getFromConfig(self::TABLE).' FROM '.$this->getFromConfig(self::TABLE).' '.$this->getJoins().' ';
-    }
-
-    /**
-     * @return string
      */
     protected function getJoins() : string
     {
@@ -213,31 +210,23 @@ abstract class DbMapper extends BaseMapper
     }
 
     /**
-     * @return mixed
+     * @return int
      * @throws InfrastructureException
      */
     protected function getLoadTotalCount() : int
     {
-        return $this->db->execute('SELECT FOUND_ROWS() as count', [])->fetch()['count'];
+        return $this->mySqlClient->fetch('SELECT FOUND_ROWS() as count', [])['count'];
     }
 
     /**
-     * @param SearchCriteria $filter
+     * @param string $byPropertyName
+     * @param $propertyValue
      * @return bool
      * @throws InfrastructureException
      */
-    public function delete(SearchCriteria $filter) : bool
+    public function delete(string $byPropertyName, $propertyValue) : bool
     {
-        $queryBuilder = new QueryBuilder($this->getFromConfig(self::COLUMNS));
-        try {
-            $whereQueryPart = $queryBuilder->generateWhere($filter);
-        } catch (QueryBuilderEmptyInQueryException $exception) {
-            return true;
-        }
-        $query = $this->getDeleteQuery().$whereQueryPart->getQuery();
-
-        $this->db->execute($query, $whereQueryPart->getBindingValues());
-
+        $this->mySqlClient->delete($this->getFromConfig(self::TABLE), [$byPropertyName => $propertyValue]);
         return true;
     }
 
@@ -269,5 +258,22 @@ abstract class DbMapper extends BaseMapper
         }
 
         return $this->config[$name];
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     * @throws InfrastructureException
+     */
+    protected function getColumnValue(array $data): array
+    {
+        $filteredFields = array_intersect_key($data, $this->getFromConfig(self::COLUMNS));
+
+        $columnValue = [];
+        foreach ($filteredFields as $key => $value) {
+            $columnValue[$this->getFromConfig(self::COLUMNS)[$key]] = $value;
+        }
+
+        return $columnValue;
     }
 }

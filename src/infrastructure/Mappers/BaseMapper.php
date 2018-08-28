@@ -43,10 +43,11 @@ abstract class BaseMapper
     abstract public function load(SearchCriteria $filter) : PaginationCollection;
 
     /**
-     * @param SearchCriteria $filter
+     * @param string $byPropertyName
+     * @param $propertyValue
      * @return bool
      */
-    abstract public function delete(SearchCriteria $filter) : bool;
+    abstract public function delete(string $byPropertyName, $propertyValue) : bool;
 
     /**
      * @param array $data

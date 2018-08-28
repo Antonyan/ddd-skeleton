@@ -9,10 +9,16 @@ use Infrastructure\Models\DbQueryPart;
 use Infrastructure\Models\SearchCriteria\SearchCriteria;
 use Infrastructure\Models\SearchCriteria\SearchCriteriaQueryString;
 
-class QueryBuilder
+class FilterToQueryTranslator
 {
-    private $columns = [];
+    /**
+     * @var array
+     */
+    private $columns;
 
+    /**
+     * @var int
+     */
     private $placeholder = 1;
 
     /**

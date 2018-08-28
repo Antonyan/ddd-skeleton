@@ -65,13 +65,12 @@ class RestaurantService extends BaseService
      * @param $id
      * @return bool
      * @throws InfrastructureException
-     * @throws Exception
+     * @throws ReflectionException
      */
     public function delete($id) : bool
     {
-        $this->getRestaurantAttributeValueDbMapper()
-            ->delete(new SearchCriteriaConstructor([new EqualCriteria(RestaurantAttributeValue::RESTAURANT_ID, $id)]));
-        return $this->getRestaurantDbMapper()->delete(new SearchCriteriaConstructor([new EqualCriteria('id', $id)]));
+        $this->getRestaurantAttributeValueDbMapper()->delete(RestaurantAttributeValue::RESTAURANT_ID, $id);
+        return $this->getRestaurantDbMapper()->delete(Restaurant::ID, $id);
     }
 
     /**
